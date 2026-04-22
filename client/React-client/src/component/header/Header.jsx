@@ -44,7 +44,7 @@ export default function Header() {
   // Xử lý gửi form tìm kiếm
   const handleSearchSubmit = (e) => {
     e.preventDefault(); // Ngăn chặn reload trang
-    if (query.length > 2) {
+    if (query.length >= 1) {
       navigate(`/search?query=${encodeURIComponent(query)}`); // Chuyển hướng đến trang tìm kiếm
     }
   };
