@@ -14,16 +14,46 @@ export default function ChangePassword() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (formData.new_password !== formData.new_password_confirmation) {
+  //     setMessage(`Mật khẩu nhập lại không khớp!!`);
+  //     return false;
+  //   }
+  //   const result = await changePassword(formData);
+  //   if (!result.success) {
+  //     setMessage(result.message);
+  //   } else {
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Xóa message cũ trước khi kiểm tra
+    setMessage("");
+
     if (formData.new_password !== formData.new_password_confirmation) {
       setMessage(`Mật khẩu nhập lại không khớp!!`);
-      return false;
+      return;
     }
+
     const result = await changePassword(formData);
+
     if (!result.success) {
       setMessage(result.message);
     } else {
+      // 1. Thông báo thành công
+      setMessage("Đổi mật khẩu thành công!");
+
+      // 2. Reset lại form (làm trống các input)
+      setFormData({
+        current_password: "",
+        new_password: "",
+        new_password_confirmation: "",
+      });
+
+      // (Tùy chọn) Tự động xóa thông báo sau 3 giây
+      setTimeout(() => setMessage(""), 3000);
     }
   };
 
@@ -75,8 +105,21 @@ export default function ChangePassword() {
             required
           />
         </p>
-        <div className="h-5">
+        {/* <div className="h-5">
           {message && <p className="pt-1 text-sm text-red-400">{message}</p>}
+        </div> */}
+        <div className="h-5">
+          {message && (
+            <p
+              className={`pt-1 text-sm ${
+                message.includes("thành công")
+                  ? "text-green-600"
+                  : "text-red-400"
+              }`}
+            >
+              {message}
+            </p>
+          )}
         </div>
 
         <div>

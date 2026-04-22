@@ -150,12 +150,15 @@ export default function HeaderNav() {
                 </li>
               ))}
 
-              <NavLink
+              {/* <NavLink
                 to="/san-pham?ct=discount-value"
                 className="origin-top animate-swing"
               >
                 <img src="/flash.webp" className="w-24" alt="" />
-              </NavLink>
+              </NavLink> */}
+              <a href="/#flashsale" className="origin-top animate-swing">
+                <img src="/flash.webp" className="w-24" alt="" />
+              </a>
             </ul>
           </nav>
 

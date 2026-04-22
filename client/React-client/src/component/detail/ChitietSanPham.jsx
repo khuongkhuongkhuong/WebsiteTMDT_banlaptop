@@ -84,6 +84,12 @@ function ChitietSanPham({ fetchedData }) {
     setCount(count + 1);
   };
 
+  const buildImg = (path) => {
+    if (!path) return "";
+
+    return `${import.meta.env.VITE_ENDPOINT}/${path.replace(/^\/+/, "")}`;
+  };
+
   const imgChild = useMemo(() => {
     return [...(fetchedData?.images ?? [])]
       .sort((a, b) => a.sort - b.sort)
@@ -114,7 +120,8 @@ function ChitietSanPham({ fetchedData }) {
               onClick={() => setmainImg(item.img_products)}
             >
               <img
-                src={`${import.meta.env.VITE_ENDPOINT}/${item?.img_products}`}
+                //src={`${import.meta.env.VITE_ENDPOINT}/${item?.img_products}`}
+                src={buildImg(item.img_products)}
                 alt={`Ảnh ${index}`}
                 className="h-full w-full object-cover"
               />
@@ -127,7 +134,8 @@ function ChitietSanPham({ fetchedData }) {
           className="mx-auto w-10/12 xl:w-auto"
         >
           <img
-            src={`${import.meta.env.VITE_ENDPOINT}/${mainImg}`}
+            //src={`${import.meta.env.VITE_ENDPOINT}${mainImg}`}
+            src={buildImg(mainImg)}
             className="w-full"
             alt="main"
           />

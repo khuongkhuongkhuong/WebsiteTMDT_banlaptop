@@ -19,7 +19,7 @@ export default function TopBanChay() {
             onClick={() => setState(true)}
             className={`${state ? "bg-primary font-medium text-white shadow" : "border bg-white text-black"} rounded-full px-6 py-1 text-sm`}
           >
-            TMDT
+            Laptop
           </button>
         </BtnAnimation>
         <BtnAnimation>
