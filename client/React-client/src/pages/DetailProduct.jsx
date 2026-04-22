@@ -10,12 +10,9 @@ import { useSelector } from "react-redux";
 import { useEffect, useLayoutEffect } from "react";
 
 export default function DetailProduct() {
-  
-
   const product = useLoaderData();
 
   useEffect(() => {
-    // document.title = "Sản phẩm | xedap_3s";
     document.title = `${product.name} | ${import.meta.env.VITE_WEBSITE_NAME}`;
   }, []);
 

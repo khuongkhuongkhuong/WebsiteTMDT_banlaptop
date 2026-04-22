@@ -106,7 +106,7 @@ export async function fetchProductBestSellingPhuKien() {
   const config = {
     method: "get",
     maxBodyLength: Infinity,
-    url: `${API_ENDPOINT}product?mainCate=2&ct=best-selling&limit=8`,
+    url: `${API_ENDPOINT}product?mainCate=3&ct=best-selling&limit=8`,
     headers: {},
   };
   try {

@@ -100,7 +100,6 @@ class CategoryAdController extends Controller
         $request->validate([
             'id_main_category' => 'required|exists:main_categories,id',
             'name' => 'required|string|max:255',
-            'img' => 'required|image',
             'sort' => 'required|integer',
             'status' => 'required|boolean',
         ]);
@@ -109,17 +108,11 @@ class CategoryAdController extends Controller
         $slug = Str::slug($request->name);
         $originalSlug = $slug;
         $counter = 1;
-        while (\App\Models\SubCategory::where('slug', $slug)->exists()) {
+        // while (\App\Models\SubCategory::where('slug', $slug)->exists()) {
+        //     $slug = $originalSlug . '-' . $counter++;
+        // }
+        while (\App\Models\SubCategory::withTrashed()->where('slug', $slug)->exists()) {
             $slug = $originalSlug . '-' . $counter++;
-        }
-    
-        // Xử lý hình ảnh
-        $path = null;
-        if ($request->hasFile('img')) {
-            $image = $request->file('img');
-            $fileName = time() . '-' . Str::slug(pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('img/category'), $fileName);
-            $path = '/img/category/' . $fileName;
         }
     
         // Tạo danh mục phụ
@@ -127,7 +120,6 @@ class CategoryAdController extends Controller
             'id_main_category' => $request->id_main_category,
             'name' => $request->name,
             'slug' => $slug,
-            'image' => $path,
             'sort' => $request->sort,
             'status' => $request->status,
         ]);
@@ -141,26 +133,13 @@ class CategoryAdController extends Controller
     $request->validate([
         'name' => 'required|string|max:255',
         'sort' => 'required|integer',
-        'status' => 'required|boolean',
-        'img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        'status' => 'required|boolean', 
     ]);
 
     $sub = SubCategory::findOrFail($id);
     $sub->name = $request->name;
     $sub->sort = $request->sort;
     $sub->status = $request->status;
-
-    if ($request->hasFile('img')) {
-        // Xóa ảnh cũ nếu tồn tại
-        if ($sub->image && File::exists(public_path($sub->image))) {
-            File::delete(public_path($sub->image));
-        }
-
-        $image = $request->file('img');
-        $fileName = time() . '-' . Str::slug(pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path('img/category'), $fileName);
-        $sub->image = 'img/category/' . $fileName;
-    }
 
     $sub->save();
 
@@ -184,6 +163,7 @@ class CategoryAdController extends Controller
             return redirect()->back()->with('error', 'Không thể xóa danh mục phụ vì đang có sản phẩm liên kết.');
         }
         $sub->delete();
+        //$sub->forceDelete(); // Đây là xóa vĩnh viễn khỏi database
     
         return redirect()->back()->with('success', 'Xóa danh mục phụ thành công.');
     }

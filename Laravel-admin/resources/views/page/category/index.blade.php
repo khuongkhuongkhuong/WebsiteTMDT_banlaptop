@@ -133,7 +133,7 @@
       <div style="background:#fff; padding:20px; border-radius:12px; width:600px; position:relative;">
         <button id="closeAddSubCategoryModalBtn"
           style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:22px; cursor:pointer;">&times;</button>
-        <form action="{{route('subcategory.store')}}" method="POST" enctype="multipart/form-data">
+        <form action="{{route('subcategory.store')}}" method="POST">
           @csrf
           <div class="create-form">
             <h3 style="margin-bottom: 16px;">Thêm danh mục phụ</h3>
@@ -157,10 +157,6 @@
                 </label>
               </div>
             </div>
-            <div class="form-group" style="margin-bottom: 12px;">
-              <label>Ảnh</label>
-              <input type="file" name="img" class="form-control" required>
-            </div>
             <div class="form-group">
               <button type="submit" class="btn btn-primary">Thêm mới</button>
             </div>
@@ -175,7 +171,7 @@
       <div style="background:#fff; padding:20px; border-radius:12px; width:600px; position:relative;">
         <button id="closeEditSubCategoryModalBtn"
           style="position:absolute; top:10px; right:10px; background:none; border:none; font-size:40px; cursor:pointer;">&times;</button>
-        <form id="editSubCategoryForm" method="POST" enctype="multipart/form-data">
+        <form id="editSubCategoryForm" method="POST">
           @csrf
           @method('PUT')
           <div class="create-form">
@@ -200,12 +196,6 @@
                 </label>
               </div>
             </div>
-            <div class="form-group" style="margin-bottom: 12px;">
-              <label>Ảnh (có thể bỏ trống nếu không thay đổi)</label>
-              <input type="file" name="img" class="form-control">
-              <img id="editSubPreviewImg" src="" alt="Ảnh hiện tại"
-                style="max-width: 100%; height: 150px; border: 1px solid #ccc; padding: 4px; border-radius: 8px;">
-            </div>
             <div class="form-group">
               <button type="submit" class="btn btn-primary">Cập nhật</button>
             </div>
@@ -218,7 +208,6 @@
       <div></div>
       <div>DMP</div>
       <div>Tên danh mục</div>
-      <div>Ảnh</div>
       <div>Thứ tự</div>
       <div>Số lượng SP</div>
       <div>Trạng thái</div>
@@ -231,7 +220,6 @@
       <div></div>
       <div>DMP{{ $sub->id }}</div>
       <div>{{ $sub->name }}</div>
-      <div><img src="{{ asset($sub->image) }}" alt="Loading..." width="100px" /></div>
       <div>{{ $sub->sort }}</div>
       <div>{{$sub->products_count}}</div>
       <div>
@@ -262,7 +250,6 @@
       <div></div>
       <div>DMP</div>
       <div>Tên danh mục</div>
-      <div>Ảnh</div>
       <div>Thứ tự</div>
       <div>Số lượng SP</div>
       <div>Trạng thái</div>
@@ -275,7 +262,6 @@
       <div></div>
       <div>DMP{{ $sub->id }}</div>
       <div>{{ $sub->name }}</div>
-      <div><img src="{{ asset($sub->image) }}" alt="Loading..." width="100px" /></div>
       <div>{{ $sub->sort }}</div>
       <div>{{$sub->products_count}}</div>
       <div>
@@ -294,7 +280,7 @@
       </div>
       <div class="actions-d  ct">
         <button class="border-yellow editBtn hover_scale_btn" title="Sửa danh mục" data-id="{{ $sub->id }}" data-name="{{ $sub->name }}"
-          data-image="{{ asset($sub->image) }}">
+          data-image="{{ asset($sub->image) }}" data-sort="{{ $sub->sort }}" data-status="{{ $sub->status }}">
           <i class="fa-regular fa-pen-to-square"></i>
           {{-- <p>Sửa</p> --}}
         </button>
@@ -374,7 +360,6 @@
         <div></div>
         <div>DMP</div>
         <div>Tên danh mục</div>
-        <div>Ảnh</div>
         <div>Thứ tự</div>
         <div>Số lượng SP</div>
         <div>Trạng thái</div>
@@ -387,7 +372,6 @@
         <div></div>
         <div>DMP{{ $sub->id }}</div>
         <div>{{ $sub->name }}</div>
-        <div><img src="{{ asset($sub->image) }}" alt="Loading..." width="100px" /></div>
         <div>{{$sub->sort}}</div>
         <div>{{$sub->products_count}}</div>
         <div>
@@ -494,6 +478,30 @@
       editCategoryForm.action = `/danhmuc/${categoryId}`;
 
       editCategoryModal.style.display = 'flex';
+    });
+  });
+  
+  document.querySelectorAll('.sub-category .editBtn').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+
+      // Lấy dữ liệu từ data-attributes (chắc chắn không bị sai vị trí cột)
+      const subCategoryId = this.getAttribute('data-id');
+      const subCategoryName = this.getAttribute('data-name');
+      const sort = this.getAttribute('data-sort');
+      const status = this.getAttribute('data-status'); 
+
+      // Gán vào form
+      document.getElementById('editSubCategoryName').value = subCategoryName;
+      document.getElementById('editSubSort').value = sort;
+      // Checkbox: status 1 là check, ngược lại không
+      document.getElementById('editSubStatus').checked = (status == 1); 
+      
+      // Cập nhật action cho form
+      editSubCategoryForm.action = `/danhmuc/sub-cate/${subCategoryId}`;
+
+      // Mở Modal
+      editSubCategoryModal.style.display = 'flex';
     });
   });
 

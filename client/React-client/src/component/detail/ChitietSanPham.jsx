@@ -95,7 +95,8 @@ function ChitietSanPham({ fetchedData }) {
       return (
         <div className="w-12/12">
           <img
-src={`${import.meta.env.VITE_ENDPOINT}/${mainImg}`}            className="w-full"
+            src={`${import.meta.env.VITE_ENDPOINT}/${mainImg}`}
+            className="w-full"
             alt="default"
           />
         </div>
@@ -113,7 +114,8 @@ src={`${import.meta.env.VITE_ENDPOINT}/${mainImg}`}            className="w-full
               onClick={() => setmainImg(item.img_products)}
             >
               <img
-src={`${import.meta.env.VITE_ENDPOINT}/${item?.img_products}`}                alt={`Ảnh ${index}`}
+                src={`${import.meta.env.VITE_ENDPOINT}/${item?.img_products}`}
+                alt={`Ảnh ${index}`}
                 className="h-full w-full object-cover"
               />
             </div>
@@ -125,7 +127,7 @@ src={`${import.meta.env.VITE_ENDPOINT}/${item?.img_products}`}                al
           className="mx-auto w-10/12 xl:w-auto"
         >
           <img
-            src={`${import.meta.env.VITE_ENDPOINT}${mainImg}`}
+            src={`${import.meta.env.VITE_ENDPOINT}/${mainImg}`}
             className="w-full"
             alt="main"
           />
@@ -230,8 +232,8 @@ src={`${import.meta.env.VITE_ENDPOINT}/${item?.img_products}`}                al
             </div>
             <ul className="ml-6 list-disc pt-4 text-sm">
               <li>
-                Miễn phí ship giao hàng khi mua TMDT, không áp dụng với các
-                sản phẩm đang có khuyến mãi từ 50%
+                Miễn phí ship giao hàng khi mua TMDT, không áp dụng với các sản
+                phẩm đang có khuyến mãi từ 50%
               </li>
               <li> Được phép kiểm trả hàng</li>
               <li> Đổi trả trong 30 ngày nếu sản phẩm lỗi bất kì</li>

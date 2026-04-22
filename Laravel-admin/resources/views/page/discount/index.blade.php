@@ -367,7 +367,7 @@
         document.getElementById('edit_value').value = btn.dataset.value;
         document.getElementById('edit_time_start').value = btn.dataset.time_start;
         document.getElementById('edit_time_end').value = btn.dataset.time_end;
-        document.getElementById('edit_status').value = btn.dataset.status;
+        document.getElementById('edit_status').checked = btn.dataset.status;
         editForm.action = `/khuyenmai/update/${btn.dataset.id}`;
         editModal.style.display = 'flex';
       };
