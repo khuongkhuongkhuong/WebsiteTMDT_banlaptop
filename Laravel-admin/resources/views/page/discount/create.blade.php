@@ -28,8 +28,11 @@
         </div>
 
         <div class="form-group-edit">
-            <label for="time_end">Ngày kết thúc (Không bắt buộc)</label>
+            <label for="time_end">Ngày kết thúc</label>
             <input type="date" class="form-control" name="time_end">
+            @error('time_end')
+                <span class="text-danger">Thời gian kết thúc phải sau thời gian bắt đầu.</span>
+            @enderror
         </div>
 
         <div class="form-group-edit">
