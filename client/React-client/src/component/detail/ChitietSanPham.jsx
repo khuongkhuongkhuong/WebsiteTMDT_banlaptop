@@ -13,6 +13,7 @@ function ChitietSanPham({ fetchedData }) {
   const [variant, setvariant] = useState(product_variants[0]);
   const [mainImg, setmainImg] = useState(variant.image);
   const [count, setCount] = useState(1);
+  const [quantityError, setQuantityError] = useState("");
   const maxQuantity = variant.stock;
 
   function handleAddToCart(id, sl) {
@@ -77,11 +78,38 @@ function ChitietSanPham({ fetchedData }) {
   }, [variant]);
 
   const handleDecrease = () => {
-    if (count > 1) setCount(count - 1);
+    if (count > 1) {
+      setCount(count - 1);
+      setQuantityError("");
+    }
   };
 
   const handleIncrease = () => {
-    setCount(count + 1);
+    if (count < maxQuantity) {
+      setCount(count + 1);
+      setQuantityError("");
+    }
+  };
+
+  const handleQuantityChange = (event) => {
+    const value = parseInt(event.target.value, 10);
+
+    if (Number.isNaN(value)) {
+      setCount(1);
+      setQuantityError("Số lượng phải là số nguyên.");
+      return;
+    }
+
+    if (value < 1) {
+      setCount(1);
+      setQuantityError("Số lượng tối thiểu là 1.");
+    } else if (value > maxQuantity) {
+      setCount(maxQuantity);
+      setQuantityError(`Số lượng tối đa là ${maxQuantity}.`);
+    } else {
+      setCount(value);
+      setQuantityError("");
+    }
   };
 
   const buildImg = (path) => {
@@ -301,7 +329,14 @@ function ChitietSanPham({ fetchedData }) {
                       −
                     </button>
                   </BtnAnimation>
-                  <span className="text-lg font-medium">{count}</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={maxQuantity}
+                    value={count}
+                    onChange={handleQuantityChange}
+                    className="w-16 border-none bg-transparent text-center text-lg font-medium outline-none"
+                  />
                   <BtnAnimation>
                     <button
                       onClick={handleIncrease}
@@ -320,6 +355,12 @@ function ChitietSanPham({ fetchedData }) {
                   MUA NGAY
                 </button>
               </div>
+              {quantityError && (
+                <p className="mt-2 text-sm text-red-500">{quantityError}</p>
+              )}
+              <p className="mt-2 text-sm text-gray-600">
+                Tối đa có thể mua: {maxQuantity} sản phẩm
+              </p>
               <div className="flex space-x-12 pb-3">
                 <button
                   onClick={() => handleAddToCart(variant.id, count)}
