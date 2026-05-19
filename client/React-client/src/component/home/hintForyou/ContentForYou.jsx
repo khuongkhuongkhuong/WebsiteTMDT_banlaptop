@@ -1,10 +1,13 @@
-import { fetchBannerTwo } from "../../../api/home";
-import { useFetch } from "../../../hook/useFeach";
+//import { fetchBannerTwo } from "../../../api/home";
+//import { useFetch } from "../../../hook/useFeach";
+import { useHomeData } from "../../../context/HomeDataContext";
 import ImgSale from "./ImgSale";
 import Listproduct from "./Listproduct";
 
 export default function ContentForYou() {
-  const { fetchedData } = useFetch(fetchBannerTwo, []);
+  //const { fetchedData } = useFetch(fetchBannerTwo, []);
+  const { homeData } = useHomeData();
+  const fetchedData = homeData?.bannerTwo ?? null;
 
   return (
     <>

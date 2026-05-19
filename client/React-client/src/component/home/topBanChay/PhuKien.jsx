@@ -1,11 +1,14 @@
 import ProductCard from "../../shared/ProductCard";
 import ButtonSeeAll from "../../shared/ButtonSeeAll";
 import UIGrid from "../../shared/UIGrid";
-import { useFetch } from "../../../hook/useFeach";
-import { fetchProductBestSellingPhuKien } from "../../../api/home";
+//import { useFetch } from "../../../hook/useFeach";
+//import { fetchProductBestSellingPhuKien } from "../../../api/home";
+import { useHomeData } from "../../../context/HomeDataContext";
 
 function PhuKien({ state }) {
-  const { fetchedData } = useFetch(fetchProductBestSellingPhuKien, []);
+  //const { fetchedData } = useFetch(fetchProductBestSellingPhuKien, []);
+  const { homeData, isFetching } = useHomeData();
+  const fetchedData = homeData?.bestSellingPhuKien ?? null;
   if (state) return;
 
   return (

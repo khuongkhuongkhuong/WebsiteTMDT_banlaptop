@@ -3,8 +3,9 @@ import React from "react";
 import Slider from "react-slick";
 import BoxUserReview from "./BoxUserReview";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa6";
-import { useFetch } from "../../../hook/useFeach";
-import { getReviewWeb } from "../../../api/user";
+//import { useFetch } from "../../../hook/useFeach";
+//import { getReviewWeb } from "../../../api/user";
+import { useHomeData } from "../../../context/HomeDataContext";
 export function PrevArrow(props) {
   const { className, style, onClick } = props;
   return (
@@ -51,7 +52,9 @@ export default function UserReviewList(params) {
       },
     ],
   };
-  const { fetchedData } = useFetch(getReviewWeb, []);
+  //const { fetchedData } = useFetch(getReviewWeb, []);
+  const { homeData, isFetching } = useHomeData();
+  const fetchedData = homeData?.reviews ?? null;
   return (
     <div className="py-10">
       <div

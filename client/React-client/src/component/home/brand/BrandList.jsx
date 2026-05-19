@@ -3,9 +3,10 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { useMemo } from "react";
-import { useFetch } from "../../../hook/useFeach";
+//import { useFetch } from "../../../hook/useFeach";
 import BoxBrand from "./BoxBrand";
-import { fetchBrand } from "../../../api/productcategory";
+//import { fetchBrand } from "../../../api/productcategory";
+import { useHomeData } from "../../../context/HomeDataContext";
 
 export function PrevArrow(props) {
   const { className, style, onClick } = props;
@@ -32,7 +33,9 @@ export function NextArrow(props) {
 }
 
 export default function BrandList(params) {
-  const { fetchedData } = useFetch(fetchBrand, []);
+  //const { fetchedData } = useFetch(fetchBrand, []);
+  const { homeData, isFetching } = useHomeData();
+  const fetchedData = homeData?.brands ?? null;
   const brandFilter = useMemo(() => {
     if (!fetchedData) return []; // Tránh lỗi khi dữ liệu chưa có
     return fetchedData.sort((a, b) => b.products_count - a.products_count);

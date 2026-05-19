@@ -3,10 +3,11 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { useFetch } from "../../../hook/useFeach";
+//import { useFetch } from "../../../hook/useFeach";
 import Card from "../../shared/Card";
 import BoxCate from "./BoxCate";
-import { fetchSubCategory } from "../../../api/productcategory";
+//import { fetchSubCategory } from "../../../api/productcategory";
+import { useHomeData } from "../../../context/HomeDataContext";
 
 export function PrevArrow(props) {
   const { className, style, onClick } = props;
@@ -33,7 +34,9 @@ export function NextArrow(props) {
 }
 
 function CateHome() {
-  const { fetchedData } = useFetch(fetchSubCategory, []);
+  //const { fetchedData } = useFetch(fetchSubCategory, []);
+  const { homeData, isFetching } = useHomeData();
+  const fetchedData = homeData?.subCategories ?? [];
 
   const categoryFilter = useMemo(() => {
     if (!fetchedData) return []; // Tránh lỗi khi dữ liệu chưa có
@@ -67,10 +70,6 @@ function CateHome() {
     ],
   };
 
-  return (
-    <Card bg="bg-white">
-      
-    </Card>
-  );
+  return <Card bg="bg-white"></Card>;
 }
 export default memo(CateHome);

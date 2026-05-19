@@ -1,13 +1,16 @@
-import { useFetch } from "../../../hook/useFeach";
+//import { useFetch } from "../../../hook/useFeach";
+import { useHomeData } from "../../../context/HomeDataContext";
 
 import Banner from "./Banner";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
-import { fetchBannerOne } from "../../../api/home";
+//import { fetchBannerOne } from "../../../api/home";
 
 export default function BannerMain() {
-  const { fetchedData } = useFetch(fetchBannerOne, []);
+  //const { fetchedData } = useFetch(fetchBannerOne, []);
+  const { homeData, isFetching } = useHomeData();
+  const fetchedData = homeData?.bannerOne ?? null;
 
   //const bannerCount = fetchedData?.length || 0;
 

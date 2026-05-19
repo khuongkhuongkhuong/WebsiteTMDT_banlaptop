@@ -1,11 +1,14 @@
 import ProductCard from "../../shared/ProductCard";
 import ButtonSeeAll from "../../shared/ButtonSeeAll";
 import UIGrid from "../../shared/UIGrid";
-import { useFetch } from "../../../hook/useFeach";
-import { fetchProductBestSellingBike } from "../../../api/home";
+//import { useFetch } from "../../../hook/useFeach";
+//import { fetchProductBestSellingBike } from "../../../api/home";
+import { useHomeData } from "../../../context/HomeDataContext";
 
 function XepDap({ state }) {
-  const { fetchedData } = useFetch(fetchProductBestSellingBike, []);
+  //const { fetchedData } = useFetch(fetchProductBestSellingBike, []);
+  const { homeData, isFetching } = useHomeData();
+  const fetchedData = homeData?.bestSellingBike ?? null;
 
   if (!state) return;
   return (

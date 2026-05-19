@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Discount;
+use App\Rules\ValidDateRange;
+use Illuminate\Support\Facades\Validator;   
 use Illuminate\Http\Request;
 
 class DiscountAdController extends Controller
@@ -80,26 +82,24 @@ class DiscountAdController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate(
-            [
-                'name' => 'required|string|max:255',
-                'value' => 'required|numeric|min:1|max:100',
-                'description' => 'nullable|string|max:1000',
-                'time_start' => 'required|date',
-                'time_end' => 'nullable|date|after_or_equal:time_start',
-                'status' => 'required|in:0,1',
+        
+         $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'value' => 'required|numeric|min:1|max:100',
+            'description' => 'nullable|string|max:1000',
+            'time_start' => 'required|date',
+            'time_end' => [
+                'nullable',
+                'date',
+                new ValidDateRange($request->time_start),
             ],
-            [
-                'name.required' => 'Vui lòng nhập tên khuyến mãi.',
-                'name.max' => 'Tên khuyến mãi tối đa 255 ký tự.',
-                'value.required' => 'Vui lòng nhập giá trị giảm giá.',
-                'value.integer' => 'Giá trị giảm giá phải là số nguyên.',
-                'value.min' => 'Giá trị giảm giá tối thiểu là 1%.',
-                'value.max' => 'Giá trị giảm giá tối đa là 100%.',
-                'description.required' => 'Vui lòng nhập mô tả khuyến mãi.',
-                'description.max' => 'Mô tả tối đa 1000 ký tự.',
-            ]
-        );
+            'status' => 'required|in:0,1',
+        ]);
+
+        if ($validator->fails()) {
+            flash()->error($validator->errors()->first());
+            return redirect()->back()->withInput();
+        }
 
         Discount::create([
             'name' => $request->name,
@@ -110,19 +110,29 @@ class DiscountAdController extends Controller
             'status' => $request->status,
         ]);
 
-        return redirect()->route('khuyenmai')->with('success', 'Thêm khuyến mãi thành công!');
+        flash()->success('Thêm khuyến mãi thành công!');
+        return redirect()->route('khuyenmai');
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'value' => 'required|numeric|min:1|max:100',
             'description' => 'nullable|string|max:1000',
             'time_start' => 'required|date',
-            'time_end' => 'nullable|date|after_or_equal:time_start',
+            'time_end' => [
+                'nullable',
+                'date',
+                new ValidDateRange($request->time_start),
+            ],
             'status' => 'required|in:0,1',
         ]);
+
+        if ($validator->fails()) {
+            flash()->error($validator->errors()->first());
+            return redirect()->back()->withInput();
+        }
 
         $discount = Discount::findOrFail($id);
         $discount->update([
@@ -134,7 +144,8 @@ class DiscountAdController extends Controller
             'status' => $request->status,
         ]);
 
-        return redirect()->route('khuyenmai')->with('success', 'Cập nhật giảm giá thành công!');
+        flash()->success('Cập nhật giảm giá thành công!');
+        return redirect()->route('khuyenmai');
     }
     public function destroy($id)
     {

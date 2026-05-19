@@ -1,12 +1,17 @@
 import Card from "../../shared/Card";
 import ProductCard from "../../shared/ProductCard";
 import BannerSale from "./BannerSale";
-import { useFetch } from "../../../hook/useFeach";
+//import { useFetch } from "../../../hook/useFeach";
 import CountDown from "./CountDown";
-import { fetchProductFlashsale } from "../../../api/home";
+//import { fetchProductFlashsale } from "../../../api/home";
+import { useHomeData } from "../../../context/HomeDataContext";
 
 export default function TopSale(params) {
-  const { fetchedData } = useFetch(fetchProductFlashsale, []);
+  //const { fetchedData } = useFetch(fetchProductFlashsale, []);
+  const { homeData, isFetching } = useHomeData();
+  const fetchedData = homeData
+    ? { data: homeData.flashSaleProducts, sale: homeData.flashSale }
+    : null;
   return (
     <section id="flashsale">
       <Card>
