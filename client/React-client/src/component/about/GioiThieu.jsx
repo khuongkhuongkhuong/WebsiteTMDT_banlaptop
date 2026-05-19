@@ -33,9 +33,9 @@ export default function GioiThieu(params) {
             <p>
               Tại 3S, chúng tôi không chỉ bán TMDT, mà còn mang đến một phong
               cách sống năng động, bền vững và đầy cảm hứng. Với mong muốn trở
-              thành hệ thống bán lẻ TMDT hàng đầu, 3S cam kết cung cấp những
-              sản phẩm chất lượng cao, dịch vụ tận tâm và trải nghiệm mua sắm
-              hoàn hảo cho khách hàng.
+              thành hệ thống bán lẻ TMDT hàng đầu, 3S cam kết cung cấp những sản
+              phẩm chất lượng cao, dịch vụ tận tâm và trải nghiệm mua sắm hoàn
+              hảo cho khách hàng.
             </p>
             <h3 className="text-xl font-bold text-gray-700">
               Vì sao chọn 3S ?
@@ -49,7 +49,7 @@ export default function GioiThieu(params) {
           </div>
           <div className="col-span-12 lg:col-span-6">
             <img
-              src="/public/about/pexels-photo-10969083.webp"
+              src="/public/about/gioithieu1.jpg"
               alt="anh"
               className="rounded-2xl shadow-xl"
             />
@@ -61,15 +61,15 @@ export default function GioiThieu(params) {
         <div className="grid grid-cols-12 lg:gap-20">
           <div className="col-span-12 gap-2 lg:col-span-6 lg:flex">
             <img
-              src="/public/about/pexels-photo-4198566.jpeg"
+              src="/public/about/gioithieu2.webp"
               alt="anh"
               className="inline-block h-96 rounded-2xl shadow-xl"
             />
-            <img
-              src="/public/about/pexels-photo-4198566.jpeg"
+            {/* <img
+              src="/public/about/gioithieu2.webp"
               alt="anh"
               className="inline-block h-96 rounded-2xl shadow-xl"
-            />
+            /> */}
           </div>
           <div className="col-span-12 leading-8 lg:col-span-6">
             <h3 className="text-xl font-bold text-gray-700">Cam kết của 3S</h3>

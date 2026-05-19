@@ -6,38 +6,38 @@ export default function HuongDanMua(params) {
         <h4 className="pb-4 pt-8 text-2xl font-bold">
           Bước 1 : Tìm hiểu thông tin sản phẩm
         </h4>
-        <img src="/public/about/1.jpg" alt="anh" />
+        <img src="/public/about/1.png" alt="anh" />
         <h4 className="pb-4 pt-8 text-2xl font-bold">Bước 2 : mua hàng</h4>
-        <img src="/public/about/2.jpg" alt="anh" />
+        <img src="/public/about/2.png" alt="anh" />
 
         <h4 className="pb-4 pt-8 text-2xl font-bold">Bước 3 : Vào giỏ hàng</h4>
-        <img src="/public/about/3.jpg" alt="anh" />
+        <img src="/public/about/3.png" alt="anh" />
 
         <h4 className="pb-4 pt-8 text-2xl font-bold">
           Bước 4 : Bấm nút Thanh toán
         </h4>
-        <img src="/public/about/4.jpg" alt="anh" />
+        <img src="/public/about/4.png" alt="anh" />
 
         <h4 className="pb-4 pt-8 text-2xl font-bold">
           Bước 5 :Tiến hành đặt hàng
         </h4>
 
-        <img src="/public/about/5.jpg" alt="anh" />
+        <img src="/public/about/5.png" alt="anh" />
 
-        <h4 className="pb-4 pt-8 text-2xl font-bold">
+        {/* <h4 className="pb-4 pt-8 text-2xl font-bold">
           Bước 6: Điền thông tin chi tiết người nhận & Chọn hình thức thanh toán
         </h4>
-        <img src="/public/about/6.jpg" alt="anh" />
+        <img src="/public/about/6.jpg" alt="anh" /> */}
 
         <h4 className="pb-4 pt-8 text-2xl font-bold">
-          Bước 7: Chuyển khoản thanh toán
+          Bước 6: Chuyển khoản thanh toán
+        </h4>
+        <img src="/public/about/6.png" alt="anh" />
+
+        <h4 className="pb-4 pt-8 text-2xl font-bold">
+          Bước 7: Bạn đã đặt hàng thành công!
         </h4>
         <img src="/public/about/7.jpg" alt="anh" />
-
-        <h4 className="pb-4 pt-8 text-2xl font-bold">
-          Bước 8: Bạn đã đặt hàng thành công!
-        </h4>
-        <img src="/public/about/8.jpg" alt="anh" />
 
         <p>
           Sau khi xác nhận đặt hàng, bạn sẽ nhận được mã đơn hàng và email . Hãy
