@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
-use App\Models\OrderDetail; // Đảm bảo bạn đã import Model này (tùy tên Model chi tiết đơn hàng của bạn)
+use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -54,17 +54,17 @@ class OrderController extends Controller
         }
 
         // ==========================================
-        // 3. XỬ LÝ THANH TOÁN VNPAY (Giả sử id_payment = 4 là VNPay, bạn thay số 4 bằng ID thực tế trong Database nhé)
+        // 3. XỬ LÝ THANH TOÁN VNPAY 
         // ==========================================
-        if ($request->id_payment == 4) { 
-            
+        if ($request->id_payment == 4) {
+
             // Cấu hình VNPay (Nên lấy từ file .env)
-            $vnp_TmnCode = env('VNPAY_TMN_CODE', 'T90W6Q5G'); // Mã website của bạn trên VNPay
+            $vnp_TmnCode = env('VNPAY_TMN_CODE', 'T90W6Q5G'); // Mã website trên VNPay
             $vnp_HashSecret = env('VNPAY_HASH_SECRET', 'YOUR_SECRET_KEY'); // Chuỗi bí mật
             $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-            
+
             // URL trả về sau khi khách thanh toán xong (Trang frontend của bạn)
-            $vnp_Returnurl = url("/api/vnpay-return"); 
+            $vnp_Returnurl = url("/api/vnpay-return");
 
             $vnp_TxnRef = $order->id; // Mã đơn hàng
             $vnp_OrderInfo = "Thanh toan don hang " . $order->id;
@@ -150,24 +150,47 @@ class OrderController extends Controller
     {
     }
 
-    public function cancelOrder(Request $request, string $id)
+    public function cancelOrder($id)
     {
-        $order = Order::where('id_user', Auth::id())->where('id', $id)->first();
-        if (!$order) {
-            return response()->json(['message' => 'Không tìm thấy đơn hàng'], 404);
-        }
-        if ($order->status === 0) {
-            return response()->json(['message' => 'Đơn hàng đã hủy trước đó'], 401);
-        }
-        if ($order->status === 1) {
+        try {
+            $order = Order::where('id', $id)
+                ->where('id_user', auth()->id())
+                ->first();
+
+            if (!$order) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Không tìm thấy đơn hàng'
+                ], 404);
+            }
+
+            if ($order->status == 3) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Đơn hàng đã hoàn thành, không thể hủy'
+                ], 400);
+            }
+
+            if ($order->status == 0) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Đơn hàng đã được hủy trước đó'
+                ], 400);
+            }
+
             $order->status = 0;
             $order->save();
-            return response()->json(['message' => 'Hủy đơn hàng thành công'], 200);
-        }
-        if ($order->status === 2) {
-            return response()->json(['message' => 'Liên hệ cửa hàng để hủy'], 401);
-        }
 
-        return response()->json(['message' => 'Trạng thái đơn hàng không hợp lệ'], 400);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Hủy đơn hàng thành công'
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class OrderAdController extends Controller
 {
@@ -111,35 +112,53 @@ class OrderAdController extends Controller
       'order_id' => 'required|exists:orders,id',
       'status' => 'required|in:0,1,2,3',
     ]);
-    $order = Order::with('orders_detail.productVariant')->findOrFail($request->order_id);
-    
-    // Nếu chuyển sang trạng thái "Hoàn thành"
-    if ($request->status == 3 && $order->status != 3) {
-      foreach ($order->orders_detail as $detail) {
-        $variant = $detail->productVariant;
-        if ($variant) {
-          if ($variant->stock < $detail->quantity) {
-            return back()->with('error', "Biến thể ID {$variant->id} không đủ hàng (còn {$variant->stock}, cần {$detail->quantity}) để hoàn thành đơn hàng.");
-          }
-        }
-      }
-      // Nếu qua được vòng kiểm tra thì trừ kho
-      foreach ($order->orders_detail as $detail) {
-        $variant = $detail->productVariant;
-        if ($variant) {
-          $variant->stock -= $detail->quantity;
-          $variant->save();
-        }
-      }
-      
-      // TỰ ĐỘNG CHUYỂN THANH TOÁN THÀNH 1 KHI DUYỆT ĐƠN HOÀN THÀNH
-      $order->thanh_toan = 1;
-    }
-    
-    // Cập nhật trạng thái đơn hàng
-    $order->status = $request->status;
-    $order->save();
 
-    return back()->with('success', 'Cập nhật trạng thái đơn hàng thành công.');
+    try {
+      DB::transaction(function () use ($request) {
+        $order = Order::with('orders_detail.productVariant')
+          ->lockForUpdate()
+          ->findOrFail($request->order_id);
+
+        $oldStatus = $order->status;
+        $newStatus = (int) $request->status;
+
+        if ($oldStatus == 0) {
+          throw new \Exception('Đơn hàng đã hủy, không thể cập nhật trạng thái.');
+        }
+
+        if ($oldStatus == 3) {
+          throw new \Exception('Đơn hàng đã hoàn thành, không thể cập nhật lại trạng thái.');
+        }
+
+        if ($newStatus == 3 && $oldStatus != 3) {
+          foreach ($order->orders_detail as $detail) {
+            $variant = ProductVariant::lockForUpdate()->find($detail->id_variant);
+
+            if (!$variant) {
+              throw new \Exception("Không tìm thấy biến thể sản phẩm ID {$detail->id_variant}.");
+            }
+
+            if ($variant->stock < $detail->quantity) {
+              throw new \Exception("Biến thể ID {$variant->id} không đủ hàng. Còn {$variant->stock}, cần {$detail->quantity}.");
+            }
+          }
+
+          foreach ($order->orders_detail as $detail) {
+            $variant = ProductVariant::lockForUpdate()->find($detail->id_variant);
+            $variant->decrement('stock', $detail->quantity);
+          }
+
+          $order->thanh_toan = 1;
+        }
+
+        $order->status = $newStatus;
+        $order->save();
+      });
+
+      return back()->with('success', 'Cập nhật trạng thái đơn hàng thành công.');
+
+    } catch (\Exception $e) {
+      return back()->with('error', $e->getMessage());
+    }
   }
 }
