@@ -42,9 +42,9 @@ export default function CheckOut() {
     a.trim(),
   );
 
-  const [provinces, setProvinces] = useState([]); 
-  const [districts, setDistricts] = useState([]); 
-  const [wards, setWards] = useState([]); 
+  const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [addressDetail, setAddressDetail] = useState(addrDetail || "");
@@ -80,7 +80,7 @@ export default function CheckOut() {
     (e) => {
       const provincename = e.target.value;
       setSelectedProvince(provincename);
-      setSelectedDistrict(""); 
+      setSelectedDistrict("");
       setWards([]);
       const province = provinces.find(
         (p) => p.name.toString() === provincename,
@@ -122,21 +122,21 @@ export default function CheckOut() {
       setLoading(false);
     }
     fetchProduct();
-    return () => controller.abort(); 
-  }, [cartIds.length]);
+    return () => controller.abort();
+  }, [cartIds.join(",")]);
 
   const calculateTotal = () => {
     return productListState.reduce((total, item) => {
       const quantity = cartQuantityMap[item.id] || 0;
-      const discountPercent = item.product.active_discount?.value || 0; 
-      const originalPrice = item.price * quantity; 
-      const discountAmount = (originalPrice * discountPercent) / 100; 
-      return total + (originalPrice - discountAmount); 
+      const discountPercent = item.product.active_discount?.value || 0;
+      const originalPrice = item.price * quantity;
+      const discountAmount = (originalPrice * discountPercent) / 100;
+      return total + (originalPrice - discountAmount);
     }, 0);
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     if (isCart.length === 0) {
       navigate("/");
       return;
@@ -192,7 +192,7 @@ export default function CheckOut() {
 
       try {
         const result = await postOrder(orderData, Token);
-        
+
         if (result.data?.status === "success") {
           setIsSubmitting(false);
           dispatch(cartAction.CLEAR_CART());
@@ -223,9 +223,9 @@ export default function CheckOut() {
       } catch (error) {
         setIsSubmitting(false);
         Swal.fire({
-          icon: 'error',
-          title: 'Lỗi đặt hàng',
-          text: 'Đã có lỗi xảy ra, vui lòng thử lại!',
+          icon: "error",
+          title: "Lỗi đặt hàng",
+          text: "Đã có lỗi xảy ra, vui lòng thử lại!",
         });
       }
     } else {
@@ -411,7 +411,7 @@ export default function CheckOut() {
                         htmlFor="methor"
                         className="block text-sm/6 font-semibold text-gray-900"
                       >
-                        Phương thức giao hàng
+                        Phương thức thanh toán
                       </label>
 
                       {!isFetching &&
@@ -425,7 +425,10 @@ export default function CheckOut() {
                               value={item.id}
                               className="mr-5 cursor-pointer"
                             />
-                            <label htmlFor={item.id} className="text-sm cursor-pointer">
+                            <label
+                              htmlFor={item.id}
+                              className="cursor-pointer text-sm"
+                            >
                               {item.payment_method}
                             </label>
                           </p>

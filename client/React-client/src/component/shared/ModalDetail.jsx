@@ -21,7 +21,7 @@ export default function ModalDetail({}) {
   const maxQuantity = variant.stock;
 
   function handleAddToCart(id, sl) {
-    const cart = JSON.parse(localStorage.getItem("xe_dap_cart")) || [];
+    const cart = JSON.parse(localStorage.getItem("laptop_cart")) || [];
     const index = cart.findIndex((item) => item.id === id);
 
     if (index !== -1) {
@@ -53,7 +53,7 @@ export default function ModalDetail({}) {
   }
 
   function handleByNow(id, sl) {
-    const cart = JSON.parse(localStorage.getItem("xe_dap_cart")) || [];
+    const cart = JSON.parse(localStorage.getItem("laptop_cart")) || [];
     const index = cart.findIndex((item) => item.id === id);
 
     if (index !== -1) {

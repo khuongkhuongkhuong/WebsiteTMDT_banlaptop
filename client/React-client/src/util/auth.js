@@ -1,7 +1,7 @@
-function logout() {
+export function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("user");
-  console.log(" Đã đăng xuất!");
+  console.log("Đã đăng xuất!");
 }
 
 export function saveUserToken(token, user) {
@@ -18,7 +18,8 @@ export function getToken() {
 }
 
 export function getUser() {
-  return JSON.parse(localStorage.getItem("user")) || null;
+  const user = localStorage.getItem("user");
+  return user ? JSON.parse(user) : null;
 }
 
 export function removeTokenUser() {
@@ -26,13 +27,37 @@ export function removeTokenUser() {
   localStorage.removeItem("user");
 }
 
-export function isTokenValid() {
+export async function isTokenValid() {
   const token = getToken();
+
   if (!token) return false;
+
   try {
-    const payload = JSON.parse(atob(token.split(".")[1]));
-    return payload.exp * 1000 > Date.now();
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/check-token`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: "application/json",
+        },
+      },
+    );
+
+    if (!response.ok) {
+      removeTokenUser();
+      return false;
+    }
+
+    const data = await response.json();
+
+    if (data.user) {
+      saveUser(data.user);
+    }
+
+    return true;
   } catch (error) {
+    removeTokenUser();
     return false;
   }
 }

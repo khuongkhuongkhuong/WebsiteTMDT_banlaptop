@@ -36,19 +36,28 @@ export default function Cart() {
 
   useEffect(() => {
     const controller = new AbortController();
+
     async function fetchProduct() {
       setLoading(true);
+
       try {
         const response = await postCart(cartIds);
         setProductListState(response.data.data);
       } catch (error) {
         console.error("❌❌❌ Error fetching products:", error);
       }
+
       setLoading(false);
     }
-    fetchProduct();
+
+    if (cartIds.length > 0) {
+      fetchProduct();
+    } else {
+      setProductListState([]);
+    }
+
     return () => controller.abort();
-  }, [cartIds.length]);
+  }, [cartIds.join(",")]);
 
   const calculateTotal = () => {
     return productListState.reduce((total, item) => {

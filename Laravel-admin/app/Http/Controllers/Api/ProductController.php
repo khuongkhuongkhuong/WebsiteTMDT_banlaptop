@@ -22,14 +22,16 @@ class ProductController extends Controller
 
             ->withWhereHas('brand')
             ->withWhereHas('sub_category')
-            ->with(['discount' => function ($query) {
-                $query
-                    ->where('time_start', '<=', now())
-                    ->where(function ($q) {
-                        $q->where('time_end', '>=', now())
-                            ->orWhereNull('time_end');
-                    });
-            }])
+            ->with([
+                'discount' => function ($query) {
+                    $query
+                        ->where('time_start', '<=', now())
+                        ->where(function ($q) {
+                            $q->where('time_end', '>=', now())
+                                ->orWhereNull('time_end');
+                        });
+                }
+            ])
             ->select([
                 'products.*',
                 DB::raw('(SELECT price FROM product_variants 
@@ -125,20 +127,24 @@ class ProductController extends Controller
 
         $product = Product::with([
             'productVariants'
-        ])->withSum(['orderDetails as total_buy' => function ($orderQuery) {
-            $orderQuery->whereHas('order', function ($orderQuery) {
-                $orderQuery->where('status', 3);
-            });
-        }], 'quantity')
+        ])->withSum([
+                    'orderDetails as total_buy' => function ($orderQuery) {
+                        $orderQuery->whereHas('order', function ($orderQuery) {
+                            $orderQuery->where('status', 3);
+                        });
+                    }
+                ], 'quantity')
             ->withWhereHas('brand')
-            ->withWhereHas('sub_category')->with(['discount' => function ($query) {
-                $query
-                    ->where('time_start', '<=', now())
-                    ->where(function ($q) {
-                        $q->where('time_end', '>=', now())
-                            ->orWhereNull('time_end');
-                    });
-            }])
+            ->withWhereHas('sub_category')->with([
+                    'discount' => function ($query) {
+                        $query
+                            ->where('time_start', '<=', now())
+                            ->where(function ($q) {
+                                $q->where('time_end', '>=', now())
+                                    ->orWhereNull('time_end');
+                            });
+                    }
+                ])
             ->with([
                 'productCustomerSegments',
                 'images',
@@ -230,14 +236,16 @@ class ProductController extends Controller
 
             ->withWhereHas('brand')
             ->withWhereHas('sub_category')
-            ->with(['discount' => function ($query) {
-                $query
-                    ->where('time_start', '<=', now())
-                    ->where(function ($q) {
-                        $q->where('time_end', '>=', now())
-                            ->orWhereNull('time_end');
-                    });
-            }])
+            ->with([
+                'discount' => function ($query) {
+                    $query
+                        ->where('time_start', '<=', now())
+                        ->where(function ($q) {
+                            $q->where('time_end', '>=', now())
+                                ->orWhereNull('time_end');
+                        });
+                }
+            ])
             ->select([
                 'products.*',
                 DB::raw('(SELECT price FROM product_variants 
@@ -267,12 +275,12 @@ class ProductController extends Controller
         if ($request->has('dt')) {
             $id = explode(',', $request->dt);
             $query->whereHas('productCustomerSegments', function ($q) use ($id) {
-                $q->whereIn('id_customer_segment',  $id);
+                $q->whereIn('id_customer_segment', $id);
             });
         }
 
         if ($request->has('brand')) {
-            $slug =  $request->brand;
+            $slug = $request->brand;
             // $brandId = Brand::where("slug", $slug)->first('id');
             $brandId = Brand::where("slug", $slug)->value('id');
             if (!empty($brandId)) {
@@ -354,21 +362,25 @@ class ProductController extends Controller
         }
         $query = Product::where('id_discount', $flashSale->id)->with([
             'productVariants'
-        ])->withSum(['orderDetails as total_buy' => function ($orderQuery) {
-            $orderQuery->whereHas('order', function ($orderQuery) {
-                $orderQuery->where('status', 3);
-            });
-        }], 'quantity')
+        ])->withSum([
+                    'orderDetails as total_buy' => function ($orderQuery) {
+                        $orderQuery->whereHas('order', function ($orderQuery) {
+                            $orderQuery->where('status', 3);
+                        });
+                    }
+                ], 'quantity')
             ->withWhereHas('brand')
             ->withWhereHas('sub_category')
-            ->with(['discount' => function ($query) {
-                $query
-                    ->where('time_start', '<=', now())
-                    ->where(function ($q) {
-                        $q->where('time_end', '>=', now())
-                            ->orWhereNull('time_end');
-                    });
-            }])
+            ->with([
+                'discount' => function ($query) {
+                    $query
+                        ->where('time_start', '<=', now())
+                        ->where(function ($q) {
+                            $q->where('time_end', '>=', now())
+                                ->orWhereNull('time_end');
+                        });
+                }
+            ])
             // trạng thái của sản phẩm
             ->where('status', '>', 0);
 
@@ -412,33 +424,41 @@ class ProductController extends Controller
             'data' => $products
         ], 200);
     }
-
     public function search(Request $request)
     {
         $query = $request->input('q');
+
         if (!$query) {
-            return response()->json($query);
+            return response()->json([]);
         }
+
         $products = Product::with([
             'productVariants'
         ])
-            ->withSum(['orderDetails as total_buy' => function ($orderQuery) {
-                $orderQuery->whereHas('order', function ($orderQuery) {
-                    $orderQuery->where('status', 3);
-                });
-            }], 'quantity')
+            ->withSum([
+                'orderDetails as total_buy' => function ($orderQuery) {
+                    $orderQuery->whereHas('order', function ($orderQuery) {
+                        $orderQuery->where('status', 3);
+                    });
+                }
+            ], 'quantity')
             ->withWhereHas('brand')
             ->withWhereHas('sub_category')
-            ->with(['discount' => function ($query) {
-                $query
-                    ->where('time_start', '<=', now())
-                    ->where(function ($q) {
-                        $q->where('time_end', '>=', now())
-                            ->orWhereNull('time_end');
-                    });
-            }])
-            ->where('status', '>', 0)->where('name', 'LIKE', "%{$query}%")
-            ->orWhere('description', 'LIKE', "%{$query}%")
+            ->with([
+                'discount' => function ($query) {
+                    $query
+                        ->where('time_start', '<=', now())
+                        ->where(function ($q) {
+                            $q->where('time_end', '>=', now())
+                                ->orWhereNull('time_end');
+                        });
+                }
+            ])
+            ->where('status', '>', 0)
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%")
+                    ->orWhere('description', 'LIKE', "%{$query}%");
+            })
             ->paginate($request->get('limit', 12));
 
         return response()->json($products);
@@ -447,29 +467,33 @@ class ProductController extends Controller
 
     public function productRelate(Request $request)
     {
-
         $products = Product::with([
             'productVariants'
         ])
-            ->withSum(['orderDetails as total_buy' => function ($orderQuery) {
-                $orderQuery->whereHas('order', function ($orderQuery) {
-                    $orderQuery->where('status', 3);
-                });
-            }], 'quantity')
+            ->withSum([
+                'orderDetails as total_buy' => function ($orderQuery) {
+                    $orderQuery->whereHas('order', function ($orderQuery) {
+                        $orderQuery->where('status', 3);
+                    });
+                }
+            ], 'quantity')
             ->withWhereHas('brand')
             ->withWhereHas('sub_category')
-            ->with(['discount' => function ($query) {
-                $query
-                    ->where('time_start', '<=', now())
-                    ->where(function ($q) {
-                        $q->where('time_end', '>=', now())
-                            ->orWhereNull('time_end');
-                    });
-            }])
+            ->with([
+                'discount' => function ($query) {
+                    $query
+                        ->where('time_start', '<=', now())
+                        ->where(function ($q) {
+                            $q->where('time_end', '>=', now())
+                                ->orWhereNull('time_end');
+                        });
+                }
+            ])
             ->where('status', '>', 0)
-            ->where('id_category', $request->category)->where('id', "!=", $request->id)
-
-            ->get('limit', 12);
+            ->where('id_category', $request->category)
+            ->where('id', '!=', $request->id)
+            ->limit(12)
+            ->get();
 
         return response()->json($products);
     }
