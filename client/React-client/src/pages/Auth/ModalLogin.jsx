@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { CgClose } from "react-icons/cg";
 import { useDispatch } from "react-redux";
-import { popupAuthAction } from "../../store"; // Đảm bảo đường dẫn đúng file store của bạn
+import { popupAuthAction, cartAction } from "../../store";
 import { NavLink, useFetcher, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
-import BtnLoadingSubmit from "../../component/shared/BtnLoadingSubmit"; // Đảm bảo đường dẫn đúng component button
-import "react-toastify/dist/ReactToastify.css"; 
+import BtnLoadingSubmit from "../../component/shared/BtnLoadingSubmit";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ModalLogin(params) {
   const dispatch = useDispatch();
@@ -28,7 +28,7 @@ export default function ModalLogin(params) {
     if (fetcher.data.error) {
       toast.error(fetcher.data.error);
     }
-    
+
     // Trường hợp B: Lỗi Validation từ Laravel (ví dụ: "Email đã tồn tại", "Mật khẩu quá ngắn")
     if (fetcher.data.errors) {
       const errorMessages = Object.values(fetcher.data.errors).flat();
@@ -37,23 +37,26 @@ export default function ModalLogin(params) {
 
     // 3. Xử lý Thành công (Success)
     if (fetcher.data.success === true) {
-      
       // Xác định thông báo dựa trên mode (login hay signup)
+      if (fetcher.data.mode === "login") {
+        dispatch(cartAction.LOAD_CART());
+      }
       let message = fetcher.data.message;
       if (!message) {
-         message = fetcher.data.mode === "signup" 
-            ? "Đăng ký thành công! Đang vào hệ thống..." 
+        message =
+          fetcher.data.mode === "signup"
+            ? "Đăng ký thành công! Đang vào hệ thống..."
             : "Đăng nhập thành công!";
       }
 
       toast.success(message);
 
       // --- LOGIC MỚI: TỰ ĐỘNG RELOAD CHO CẢ LOGIN VÀ SIGNUP ---
-      // Vì backend đã Auth::login($user) ngay sau khi đăng ký, 
+      // Vì backend đã Auth::login($user) ngay sau khi đăng ký,
       // nên ta reload trang để React nhận diện session người dùng mới.
       setTimeout(() => {
-           dispatchHandlePopUpAuth(); // Đóng popup
-           window.location.reload();  // Tải lại trang
+        dispatchHandlePopUpAuth(); // Đóng popup
+        window.location.reload(); // Tải lại trang
       }, 1000);
     }
   }, [fetcher.data]);
@@ -76,7 +79,7 @@ export default function ModalLogin(params) {
       >
         <div className={`min-w-72 max-w-[550px] rounded-md transition-all`}>
           <div className="px-2 text-right" onClick={dispatchHandlePopUpAuth}>
-            <CgClose className="cursor-pointer inline-block text-xl" />
+            <CgClose className="inline-block cursor-pointer text-xl" />
           </div>
 
           <div className="flex items-center justify-center border-b">
@@ -169,7 +172,11 @@ export default function ModalLogin(params) {
               </div>
               <div className="my-6 flex justify-center gap-2">
                 <a href="http://localhost:8000/auth/facebook/redirect">
-                  <img src="/logo/facebook.png" alt="Facebook" className="w-36" />
+                  <img
+                    src="/logo/facebook.png"
+                    alt="Facebook"
+                    className="w-36"
+                  />
                 </a>
                 <a href="http://localhost:8000/auth/google/redirect">
                   <img src="/logo/google.png" alt="Google" className="w-36" />
@@ -177,7 +184,6 @@ export default function ModalLogin(params) {
               </div>
             </fetcher.Form>
           ) : (
-            
             /* --- FORM ĐĂNG KÝ --- */
             <fetcher.Form method="post" action="/auth">
               <input type="hidden" name="mode" value="signup" />
@@ -290,7 +296,11 @@ export default function ModalLogin(params) {
               </div>
               <div className="my-6 flex justify-center gap-2">
                 <a href="http://localhost:8000/auth/facebook/redirect">
-                  <img src="/logo/facebook.png" alt="Facebook" className="w-36" />
+                  <img
+                    src="/logo/facebook.png"
+                    alt="Facebook"
+                    className="w-36"
+                  />
                 </a>
                 <a href="http://localhost:8000/auth/google/redirect">
                   <img src="/logo/google.png" alt="Google" className="w-36" />
@@ -300,7 +310,11 @@ export default function ModalLogin(params) {
           )}
         </div>
       </aside>
-      <ToastContainer autoClose={3000} hideProgressBar={false} theme="colored" />
+      <ToastContainer
+        autoClose={3000}
+        hideProgressBar={false}
+        theme="colored"
+      />
     </>
   );
 }
