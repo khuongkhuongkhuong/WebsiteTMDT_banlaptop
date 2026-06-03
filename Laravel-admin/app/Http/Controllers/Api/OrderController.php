@@ -4,7 +4,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+<<<<<<< HEAD
 use App\Models\OrderDetail; 
+=======
+use App\Models\OrderDetail;
+>>>>>>> 6045d5a81d3b1d26b10db5a9f363874b34b56c58
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -49,7 +53,10 @@ class OrderController extends Controller
 
     public function cancelOrder($id)
     {
+<<<<<<< HEAD
         $order = Order::where('id_user', Auth::id())->where('id', $id)->first();
+=======
+>>>>>>> 6045d5a81d3b1d26b10db5a9f363874b34b56c58
         try {
             $order = Order::with('orders_detail.productVariant')
                 ->where('id', $id)
@@ -85,9 +92,14 @@ class OrderController extends Controller
 
             $order->status = 0;
             $order->save();
+<<<<<<< HEAD
            
 
        return response()->json([
+=======
+
+            return response()->json([
+>>>>>>> 6045d5a81d3b1d26b10db5a9f363874b34b56c58
                 'status' => 'success',
                 'message' => 'Hủy đơn hàng thành công'
             ]);

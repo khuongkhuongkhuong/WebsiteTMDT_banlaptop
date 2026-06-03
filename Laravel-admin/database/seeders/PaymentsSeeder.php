@@ -39,6 +39,14 @@ class PaymentsSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'payment_method' => 'Thanh toán LPO',
+                'bank' => null,
+                'bank_number' => null,
+                'status' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

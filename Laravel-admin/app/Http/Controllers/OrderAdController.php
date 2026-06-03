@@ -112,6 +112,7 @@ class OrderAdController extends Controller
       'order_id' => 'required|exists:orders,id',
       'status' => 'required|in:0,1,2,3',
     ]);
+
     try {
       DB::transaction(function () use ($request) {
         $order = Order::with('orders_detail.productVariant')
@@ -124,7 +125,8 @@ class OrderAdController extends Controller
         if ($oldStatus == 0) {
           throw new \Exception('Đơn hàng đã hủy, không thể cập nhật trạng thái.');
         }
-       if ($oldStatus == 3) {
+
+        if ($oldStatus == 3) {
           throw new \Exception('Đơn hàng đã hoàn thành, không thể cập nhật lại trạng thái.');
         }
 

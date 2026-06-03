@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Discount;
 use App\Rules\ValidDateRange;
-use Illuminate\Support\Facades\Validator;   
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 class DiscountAdController extends Controller
@@ -82,8 +82,7 @@ class DiscountAdController extends Controller
 
     public function store(Request $request)
     {
-        
-         $validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'value' => 'required|numeric|min:1|max:100',
             'description' => 'nullable|string|max:1000',

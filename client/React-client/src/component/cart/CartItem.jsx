@@ -6,16 +6,50 @@ import { NavLink } from "react-router-dom";
 
 export default function CartItem({ item, cartQuantityMap }) {
   const [quantitySate, setQuantity] = useState(cartQuantityMap);
+  const [quantityError, setQuantityError] = useState("");
   const dispatch = useDispatch();
+
+  const salePrice = item.product?.active_discount
+    ? item.price - item.price * (item.product?.active_discount.value / 100)
+    : item.price;
+
+  const totalPrice = salePrice * quantitySate;
 
   const handleDecrease = () => {
     if (quantitySate > 1) {
       setQuantity(quantitySate - 1);
+      setQuantityError("");
     }
   };
 
   const handleIncrease = () => {
-    setQuantity(quantitySate + 1);
+    if (quantitySate < item.stock) {
+      setQuantity(quantitySate + 1);
+      setQuantityError("");
+    } else {
+      setQuantityError(`Tối đa ${item.stock} sản phẩm trong kho.`);
+    }
+  };
+
+  const handleQuantityChange = (event) => {
+    const value = parseInt(event.target.value, 10);
+
+    if (Number.isNaN(value)) {
+      setQuantity(1);
+      setQuantityError("");
+      return;
+    }
+
+    if (value < 1) {
+      setQuantity(1);
+      setQuantityError("Số lượng tối thiểu là 1.");
+    } else if (value > item.stock) {
+      setQuantity(item.stock);
+      setQuantityError(`Tối đa ${item.stock} sản phẩm trong kho.`);
+    } else {
+      setQuantity(value);
+      setQuantityError("");
+    }
   };
 
   useEffect(() => {
@@ -25,131 +59,139 @@ export default function CartItem({ item, cartQuantityMap }) {
         sl: quantitySate,
       }),
     );
-  }, [quantitySate]);
+  }, [quantitySate, dispatch, item.id]);
 
   function hanldeDelete(id) {
     dispatch(cartAction.DELETE_CART(id));
   }
 
   return (
-    <>
-      <div
-        className="gridColTable border-b-2 border-primary py-2 text-xs sm:items-center md:text-sm xl:text-base"
-        key={item.id}
-      >
-        <div className="flex sm:space-x-2 xl:space-x-4">
-          <img
-            src={`${import.meta.env.VITE_ENDPOINT + item?.image} `}
-            alt={item?.product?.name}
-            className="h-20 w-20 xl:h-28 xl:w-28"
-          />
+    <div
+      className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:border-primary/40 hover:shadow-md"
+      key={item.id}
+    >
+      <div className="grid grid-cols-1 gap-5 md:grid-cols-[2.2fr_1fr_1.2fr_1fr] md:items-center">
+        {/* Thông tin sản phẩm */}
+        <div className="flex gap-4">
+          <NavLink
+            to={`/chi-tiet?sp=${item.product.slug}`}
+            className="h-24 w-24 shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-gray-50"
+          >
+            <img
+              src={`${import.meta.env.VITE_ENDPOINT + item?.image}`}
+              alt={item?.product?.name}
+              className="h-full w-full object-cover transition hover:scale-105"
+            />
+          </NavLink>
 
-          <div className="flex flex-col justify-around">
-            <h6 className="leading-5">
-              <NavLink
-                className="lowercase first-letter:uppercase"
-                to={`/chi-tiet?sp=${item.product.slug}`}
-              >
-                {item?.product?.name || "Không có tên"} ({item?.option})
-              </NavLink>
-            </h6>
-            {/* btn xoa */}
+          <div className="flex min-w-0 flex-col justify-center">
+            <NavLink
+              className="line-clamp-2 text-base font-semibold capitalize leading-6 text-gray-800 transition hover:text-primary"
+              to={`/chi-tiet?sp=${item.product.slug}`}
+            >
+              {item?.product?.name || "Không có tên"}
+            </NavLink>
+
+            <p className="mt-1 text-sm text-gray-500">
+              Phiên bản:{" "}
+              <span className="font-medium text-gray-700">{item?.option}</span>
+            </p>
+
+            <p className="mt-1 text-xs text-gray-400">
+              Còn lại trong kho:{" "}
+              <span className="font-semibold text-gray-600">{item.stock}</span>
+            </p>
+
             <button
-              className="mt-2 hidden w-10 text-primary sm:block"
+              className="mt-3 flex w-fit items-center gap-2 rounded-lg px-1 text-sm font-medium text-red-500 transition hover:text-red-700"
               onClick={() => hanldeDelete(item.id)}
             >
-              <FaRegTrashAlt className="text-sm xl:text-lg" />
+              <FaRegTrashAlt />
+              Xóa
             </button>
-            {/*  */}
           </div>
         </div>
 
-        {/*  */}
-        <div className="flex items-center justify-between pt-2 sm:block sm:pt-0 sm:text-center">
+        {/* Đơn giá */}
+        <div className="flex flex-col justify-center md:items-center">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-400 md:hidden">
+            Đơn giá
+          </p>
+
           {item.product?.active_discount ? (
-            <div className="animate-pulse text-xs font-bold text-red-600">
-              <p>
-                <span className="pr-2">Đã giảm</span>
-                {item.product?.active_discount.value}%
+            <div className="text-left md:text-center">
+              <p className="text-sm text-gray-400 line-through">
+                {Number(item.price).toLocaleString()}đ
               </p>
-              <p>
-                {Number(
-                  item.price -
-                    item.price * (item.product?.active_discount.value / 100),
-                ).toLocaleString()}
-                đ
+
+              <p className="font-bold text-red-500">
+                {Number(salePrice).toLocaleString()}đ
               </p>
+
+              <span className="mt-1 inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-500">
+                Giảm {item.product?.active_discount.value}%
+              </span>
             </div>
           ) : (
-            <p>{Number(item.price).toLocaleString()}</p>
+            <p className="font-semibold text-gray-800">
+              {Number(item.price).toLocaleString()}đ
+            </p>
           )}
-          <div className="ml-10 inline-block sm:hidden sm:text-center">
-            {/* so luong */}
+        </div>
 
-            <button
-              onClick={handleDecrease}
-              className="p-1 text-lg font-bold text-black disabled:cursor-not-allowed disabled:text-gray-400 xl:p-4 xl:text-xl"
-              disabled={quantitySate === 1}
-            >
-              −
-            </button>
-            <span className="text-base font-medium xl:text-lg">
-              {quantitySate}
-            </span>
-            <button
-              onClick={handleIncrease}
-              className="p-1 text-lg font-bold text-primary hover:text-black disabled:cursor-not-allowed disabled:text-gray-400 xl:p-4 xl:text-xl"
-              disabled={quantitySate === item.stock}
-            >
-              +
-            </button>
-            {/* so luong */}
+        {/* Số lượng */}
+        <div className="flex flex-col items-start justify-center md:items-center">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400 md:hidden">
+            Số lượng
+          </p>
+
+          <div className="flex min-h-[82px] flex-col items-start justify-start md:items-center">
+            <div className="flex items-center overflow-hidden rounded-xl border border-gray-300 bg-white shadow-sm">
+              <button
+                onClick={handleDecrease}
+                className="flex h-11 w-11 items-center justify-center text-xl font-bold text-gray-700 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-300"
+                disabled={quantitySate === 1}
+              >
+                −
+              </button>
+
+              <input
+                type="number"
+                min={1}
+                max={item.stock}
+                value={quantitySate}
+                onChange={handleQuantityChange}
+                className="h-11 w-16 appearance-none border-x border-gray-200 text-center text-base font-semibold outline-none"
+              />
+
+              <button
+                onClick={handleIncrease}
+                className="flex h-11 w-11 items-center justify-center text-xl font-bold text-primary transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:text-gray-300"
+                disabled={quantitySate >= item.stock}
+              >
+                +
+              </button>
+            </div>
+
+            <p className="mt-1 text-xs text-gray-400">Tối đa: {item.stock}</p>
+
+            <p className="mt-1 min-h-[18px] text-xs font-medium text-red-500">
+              {quantityError || ""}
+            </p>
           </div>
         </div>
-        {/*  */}
-        <div className="hidden text-center sm:block">
-          {/* so luong */}
 
-          <button
-            onClick={handleDecrease}
-            className="p-2 text-lg font-bold text-black disabled:cursor-not-allowed disabled:text-gray-400 xl:p-4 xl:text-xl"
-            disabled={quantitySate === 1}
-          >
-            −
-          </button>
-          <span className="text-base font-medium xl:text-lg">
-            {quantitySate}
-          </span>
-          <button
-            onClick={handleIncrease}
-            className="p-2 text-lg font-bold text-primary hover:text-black disabled:cursor-not-allowed disabled:text-gray-400 xl:p-4 xl:text-xl"
-            disabled={quantitySate === item.stock}
-          >
-            +
-          </button>
-          {/* so luong */}
-        </div>
+        {/* Thành tiền */}
+        <div className="flex flex-col justify-center md:items-center">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-gray-400 md:hidden">
+            Thành tiền
+          </p>
 
-        <div className="sm:text-center">
-          <span className="inline-block pr-2 font-medium sm:hidden">
-            Thành tiền :
-          </span>
-          {item.product?.active_discount
-            ? Number(
-                (item.price -
-                  item.price * (item.product?.active_discount.value / 100)) *
-                  quantitySate,
-              ).toLocaleString()
-            : Number(item.price * quantitySate).toLocaleString()}
-          đ{/* btn xoa */}
-          <button
-            className="ml-16 inline-block w-10 text-primary sm:hidden"
-            onClick={() => hanldeDelete(item.id)}
-          >
-            <FaRegTrashAlt className="text-sm xl:text-lg" />
-          </button>
+          <p className="text-lg font-bold text-primary">
+            {Number(totalPrice).toLocaleString()}đ
+          </p>
         </div>
       </div>
-    </>
+    </div>
   );
 }

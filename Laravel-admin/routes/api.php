@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\HomeDataController;
 use App\Http\Controllers\Api\AuthApiController;
 use App\Http\Controllers\Api\BannerController;
 use App\Http\Controllers\Api\BrandController;
@@ -23,8 +22,6 @@ use Illuminate\Support\Facades\Route;
 | Public API
 |--------------------------------------------------------------------------
 */
-
-Route::get('/home-data', [HomeDataController::class, 'index']);
 
 Route::post('/register', [AuthApiController::class, 'register']);
 Route::post('/login', [AuthApiController::class, 'login']);

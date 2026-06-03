@@ -1,0 +1,6 @@
+- Fix lỗi tồn kho bị trừ 2 lần khi admin cập nhật đơn hàng sang trạng thái hoàn thành.
+- Fix bug hủy đơn hàng không hoàn lại số lượng tồn kho bằng cách cộng lại stock khi người dùng hủy đơn.
+- Fix bug giả mạo người dùng khi bình luận/review bằng cách chuyển từ lấy id_user từ request sang Auth::id() phía backend.
+- Fix lỗi tìm kiếm sản phẩm trả về cả sản phẩm đã ẩn do sai logic orWhere
+- Fix lỗi giỏ hàng/checkout không reload dữ liệu đúng khi thay đổi sản phẩm trong cart.
+-
