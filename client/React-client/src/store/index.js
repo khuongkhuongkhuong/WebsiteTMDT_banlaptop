@@ -1,14 +1,36 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
 import favoriteReducer from "./favoriteSlice";
 import loadingReducer from "./loadingSlice";
-//1 tao giá trị bản đầu
-const initialCart = JSON.parse(localStorage.getItem("laptop_cart")) || [];
-const initialAuth = { popUp: false };
 
-//2 taọ slice
+const getCurrentUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem("user"));
+  } catch (error) {
+    return null;
+  }
+};
+
+const getCartKey = () => {
+  const user = getCurrentUser();
+  return user?.id ? `laptop_cart_user_${user.id}` : "laptop_cart_guest";
+};
+
+const loadCart = () => {
+  try {
+    return JSON.parse(localStorage.getItem(getCartKey())) || [];
+  } catch (error) {
+    return [];
+  }
+};
+
+const saveCart = (cart) => {
+  localStorage.setItem(getCartKey(), JSON.stringify(cart));
+};
+
+const initialCart = loadCart();
+const initialAuth = { popUp: false };
 const initialPopup = { popUp: false, payload: [] };
 
-//2 taọ slice
 const popupSlice = createSlice({
   name: "popup",
   initialState: initialPopup,
@@ -16,7 +38,7 @@ const popupSlice = createSlice({
   reducers: {
     SHOW_POPUP(state, actions) {
       state.popUp = true;
-      state.payload = actions.payload; //Lưu dữ liệu từ action vào stat
+      state.payload = actions.payload;
     },
     HIDDEN_POPUP(state) {
       state.popUp = false;
@@ -28,50 +50,55 @@ const popupSlice = createSlice({
 const cartSlice = createSlice({
   name: "laptop_cart",
   initialState: initialCart,
+
   reducers: {
+    LOAD_CART() {
+      return loadCart();
+    },
+
     ADD_CART(state, actions) {
       const { id, sl } = actions.payload;
-
-      // Tìm sản phẩm trong giỏ hàng
       const existingItem = state.find((item) => item.id === id);
 
       let newState;
 
       if (existingItem) {
-        // Nếu sản phẩm đã có, cập nhật số lượng
         newState = state.map((item) =>
           item.id === id ? { ...item, sl: item.sl + sl } : item,
         );
       } else {
-        // Nếu chưa có, thêm sản phẩm mới vào giỏ hàng
         newState = [...state, { id, sl }];
       }
 
-      // Cập nhật localStorage (chỉ ghi khi có thay đổi)
-      localStorage.setItem("laptop_cart", JSON.stringify(newState));
-
-      return newState; // Trả về state mới để Redux nhận diện thay đổi
+      saveCart(newState);
+      return newState;
     },
 
     UPDATE_CART(state, actions) {
       const index = state.findIndex((item) => item.id === actions.payload.id);
-      state[index].sl = actions.payload.sl;
-      localStorage.setItem("laptop_cart", JSON.stringify(state));
 
-      // return [...state, actions.payload];
+      if (index !== -1) {
+        state[index].sl = actions.payload.sl;
+        saveCart(state);
+      }
     },
 
     DELETE_CART(state, actions) {
       const index = state.findIndex((item) => item.id === actions.payload);
+
       if (index !== -1) {
         state.splice(index, 1);
+        saveCart(state);
       }
-      localStorage.setItem("laptop_cart", JSON.stringify(state));
     },
 
     CLEAR_CART(state) {
-      state.length = 0; // Xóa toàn bộ giỏ hàng
-      localStorage.setItem("laptop_cart", JSON.stringify([])); // Cập nhật localStorage
+      state.length = 0;
+      saveCart([]);
+    },
+
+    CLEAR_CART_STATE_ONLY() {
+      return [];
     },
   },
 });
@@ -79,8 +106,9 @@ const cartSlice = createSlice({
 const popupAuthSlice = createSlice({
   name: "popupAuth",
   initialState: initialAuth,
+
   reducers: {
-    SHOW_POPUP(state, actions) {
+    SHOW_POPUP(state) {
       state.popUp = true;
     },
     HIDDEN_POPUP(state) {
@@ -89,7 +117,6 @@ const popupAuthSlice = createSlice({
   },
 });
 
-// 3tao store
 const store = configureStore({
   reducer: {
     popupDetail: popupSlice.reducer,
@@ -100,11 +127,8 @@ const store = configureStore({
   },
 });
 
-export const popupDetailAction = popupSlice.actions; // dung DISPATH
+export const popupDetailAction = popupSlice.actions;
 export const popupAuthAction = popupAuthSlice.actions;
 export const cartAction = cartSlice.actions;
 
-export default store; // USESELECTOR LAY DL
-
-// Actions: Các action creators để bạn có thể dispatch các hành động.
-// Reducer: Một hàm reducer để quản lý state dựa trên các hành động.
+export default store;

@@ -195,7 +195,7 @@ export default function CheckOut() {
 
         if (result.data?.status === "success") {
           setIsSubmitting(false);
-          dispatch(cartAction.CLEAR_CART());
+          dispatch(cartAction.CLEAR_CART_STATE_ONLY());
 
           // ========================================================
           // XỬ LÝ CHUYỂN HƯỚNG VNPAY

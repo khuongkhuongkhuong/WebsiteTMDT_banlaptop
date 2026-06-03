@@ -10,6 +10,7 @@ export async function action({ request }) {
       email: data.get("email"),
       password: data.get("password"),
     };
+
     let error = "";
 
     if (loginData.email === "" || loginData.password === "") {
@@ -29,7 +30,7 @@ export async function action({ request }) {
 
       return {
         access_token: response.data.access_token,
-        token_type: response.data.token_typess,
+        token_type: response.data.token_type,
         message: response.data.message,
         success: response.success,
         user: response.data.user,
@@ -46,6 +47,7 @@ export async function action({ request }) {
       email: data.get("email"),
       password: data.get("password"),
     };
+
     let error = "";
 
     const response = await postRegister(signUpData);
