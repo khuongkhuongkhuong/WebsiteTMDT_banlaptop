@@ -127,29 +127,8 @@ class OrderAdController extends Controller
        if ($oldStatus == 3) {
           throw new \Exception('Đơn hàng đã hoàn thành, không thể cập nhật lại trạng thái.');
         }
-<<<<<<< HEAD
-       if ($newStatus == 3 && $oldStatus != 3) {
-          foreach ($order->orders_detail as $detail) {
-            $variant = ProductVariant::lockForUpdate()->find($detail->id_variant);
-
-            if (!$variant) {
-              throw new \Exception("Không tìm thấy biến thể sản phẩm ID {$detail->id_variant}.");
-            }
-
-            if ($variant->stock < $detail->quantity) {
-              throw new \Exception("Biến thể ID {$variant->id} không đủ hàng. Còn {$variant->stock}, cần {$detail->quantity}.");
-            }
-          }
-
-          foreach ($order->orders_detail as $detail) {
-            $variant = ProductVariant::lockForUpdate()->find($detail->id_variant);
-            $variant->decrement('stock', $detail->quantity);
-          }
-
-=======
 
         if ($newStatus == 3 && $oldStatus != 3) {
->>>>>>> 21b9aaa ( update fixed bug in readme)
           $order->thanh_toan = 1;
         }
 

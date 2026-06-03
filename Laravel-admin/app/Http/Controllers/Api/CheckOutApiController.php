@@ -20,14 +20,12 @@ class CheckOutApiController extends Controller
      */
     public function paymethod()
     {
-        //
-        $payment = Payment::where('status', '>', 0)->get();
+        $payments = Payment::where('status', 1)->get();
 
-    return response()->json([
-            'status' => 'success',
-            'data' => $payment
-        ]);
-
+        return response()->json([
+            'success' => true,
+            'payments' => $payments
+        ], 200);
     }
 
     public function getOrderById(Request $request)
