@@ -23,6 +23,7 @@ class OrderController extends Controller
     public function create()
     {
     }
+<<<<<<< HEAD
 
     /**
      * Store a newly created resource in storage.
@@ -126,6 +127,8 @@ class OrderController extends Controller
         ], 200);
     }
 
+=======
+>>>>>>> 21b9aaa ( update fixed bug in readme)
     public function show(string $id)
     {
         $order = Order::with('user', 'payment', 'orders_detail.productVariant.product')->where('id_user', Auth::id())->where('id', $id)->first();
@@ -154,7 +157,8 @@ class OrderController extends Controller
     {
         $order = Order::where('id_user', Auth::id())->where('id', $id)->first();
         try {
-            $order = Order::where('id', $id)
+            $order = Order::with('orders_detail.productVariant')
+                ->where('id', $id)
                 ->where('id_user', auth()->id())
                 ->first();
 
@@ -177,6 +181,12 @@ class OrderController extends Controller
                     'status' => 'error',
                     'message' => 'Đơn hàng đã được hủy trước đó'
                 ], 400);
+            }
+
+            foreach ($order->orders_detail as $detail) {
+                if ($detail->productVariant) {
+                    $detail->productVariant->increment('stock', $detail->quantity);
+                }
             }
 
             $order->status = 0;

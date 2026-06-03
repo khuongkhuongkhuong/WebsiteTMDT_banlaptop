@@ -29,12 +29,13 @@ export async function fetchPayment() {
     maxBodyLength: Infinity,
     url: `${API_ENDPOINT}payment`,
   };
+
   try {
     const response = await axios.request(config);
-    return response.data.data;
+    return response.data.payments || [];
   } catch (error) {
     console.error("❌❌❌ Error fetching payment:", error);
-    return null;
+    return [];
   }
 }
 

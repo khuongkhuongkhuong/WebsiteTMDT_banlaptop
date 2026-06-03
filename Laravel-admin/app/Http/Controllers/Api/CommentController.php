@@ -22,17 +22,21 @@ class CommentController extends Controller
 
   public function pulishComment(Request $request)
   {
+    $request->validate([
+      'id_product' => 'required|exists:products,id',
+      'content' => 'required|string|max:1000',
+    ]);
 
-    // $comment = $request->all();
     $comment = Comment::create([
-      'id_user' => $request->id_user,
+      'id_user' => Auth::id(),
       'id_product' => $request->id_product,
       'content' => $request->content,
+      'status' => 1,
     ]);
+
     return response()->json([
-      'status' => 'success',
-      'message' => 'Bình luận đã được đăng',
-      'data' => $comment
+      'message' => 'Bình luận thành công',
+      'data' => $comment,
     ], 201);
   }
 }

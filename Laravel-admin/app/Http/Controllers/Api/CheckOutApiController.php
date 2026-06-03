@@ -18,7 +18,7 @@ class CheckOutApiController extends Controller
   /**
      * Display a listing of the resource.
      */
-    public function paymethor()
+    public function paymethod()
     {
         //
         $payment = Payment::where('status', '>', 0)->get();
@@ -32,7 +32,11 @@ class CheckOutApiController extends Controller
 
     public function getOrderById(Request $request)
     {
-        $order = Order::where('id', $request->id)->with('payment')->where('status', '>', 0)->first();
+        $order = Order::where('id', $request->id)
+            ->where('id_user', Auth::id())
+            ->with('payment')
+            ->where('status', '>', 0)
+            ->first();
 
         if (!$order) {
             return response()->json([
@@ -126,6 +130,9 @@ class CheckOutApiController extends Controller
                         'price' => $detail['price'],
                         'quantity' => $detail['quantity'],
                     ]);
+
+                    ProductVariant::where('id', $detail['id_variant'])
+                        ->decrement('stock', $detail['quantity']);
                 }
 
                 return $order;
@@ -214,8 +221,50 @@ class CheckOutApiController extends Controller
             ], 400);
         }
     }
+    public function vnpayReturn(Request $request)
+    {
+        $vnp_HashSecret = env('VNPAY_HASH_SECRET', 'YOUR_SECRET_KEY');
 
-     // 
+        $inputData = $request->all();
+
+        if (!isset($inputData['vnp_SecureHash'])) {
+            return redirect(env('FRONTEND_URL') . '/checkout-online?status=error');
+        }
+
+        $vnp_SecureHash = $inputData['vnp_SecureHash'];
+
+        unset($inputData['vnp_SecureHash']);
+        unset($inputData['vnp_SecureHashType']);
+
+        ksort($inputData);
+
+        $hashData = "";
+        $i = 0;
+
+        foreach ($inputData as $key => $value) {
+            if ($i == 1) {
+                $hashData .= '&' . urlencode($key) . "=" . urlencode($value);
+            } else {
+                $hashData .= urlencode($key) . "=" . urlencode($value);
+                $i = 1;
+            }
+        }
+
+        $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
+
+        $orderId = $request->input('vnp_TxnRef');
+
+        if ($secureHash === $vnp_SecureHash && $request->input('vnp_ResponseCode') === '00') {
+            Order::where('id', $orderId)->update([
+                'thanh_toan' => 1
+            ]);
+
+            return redirect(env('FRONTEND_URL') . '/checkout-online?id=' . $orderId . '&status=success');
+        }
+
+        return redirect(env('FRONTEND_URL') . '/checkout-online?id=' . $orderId . '&status=failed');
+    }
+    // 
     public function webhook(Request $request)
     {
 

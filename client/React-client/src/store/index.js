@@ -2,7 +2,7 @@ import { configureStore, createSlice } from "@reduxjs/toolkit";
 import favoriteReducer from "./favoriteSlice";
 import loadingReducer from "./loadingSlice";
 //1 tao giá trị bản đầu
-const initialCart = JSON.parse(localStorage.getItem("xe_dap_cart")) || [];
+const initialCart = JSON.parse(localStorage.getItem("laptop_cart")) || [];
 const initialAuth = { popUp: false };
 
 //2 taọ slice
@@ -26,7 +26,7 @@ const popupSlice = createSlice({
 });
 
 const cartSlice = createSlice({
-  name: "xe_dap_cart",
+  name: "laptop_cart",
   initialState: initialCart,
   reducers: {
     ADD_CART(state, actions) {
@@ -48,7 +48,7 @@ const cartSlice = createSlice({
       }
 
       // Cập nhật localStorage (chỉ ghi khi có thay đổi)
-      localStorage.setItem("xe_dap_cart", JSON.stringify(newState));
+      localStorage.setItem("laptop_cart", JSON.stringify(newState));
 
       return newState; // Trả về state mới để Redux nhận diện thay đổi
     },
@@ -56,7 +56,7 @@ const cartSlice = createSlice({
     UPDATE_CART(state, actions) {
       const index = state.findIndex((item) => item.id === actions.payload.id);
       state[index].sl = actions.payload.sl;
-      localStorage.setItem("xe_dap_cart", JSON.stringify(state));
+      localStorage.setItem("laptop_cart", JSON.stringify(state));
 
       // return [...state, actions.payload];
     },
@@ -66,12 +66,12 @@ const cartSlice = createSlice({
       if (index !== -1) {
         state.splice(index, 1);
       }
-      localStorage.setItem("xe_dap_cart", JSON.stringify(state));
+      localStorage.setItem("laptop_cart", JSON.stringify(state));
     },
 
     CLEAR_CART(state) {
       state.length = 0; // Xóa toàn bộ giỏ hàng
-      localStorage.setItem("xe_dap_cart", JSON.stringify([])); // Cập nhật localStorage
+      localStorage.setItem("laptop_cart", JSON.stringify([])); // Cập nhật localStorage
     },
   },
 });
