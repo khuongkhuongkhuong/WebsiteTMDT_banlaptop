@@ -20,7 +20,7 @@ import InfoAccout from "./pages/Auth/managerUser/InfoAccout.jsx";
 import DanhGiaWeb from "./pages/Auth/managerUser/DanhGiaWeb.jsx";
 import EditAccout from "./pages/Auth/managerUser/EditAccout.jsx";
 import CheckOutFinal from "./pages/Auth/CheckOutFinal.jsx";
-import ProductsLike from "./pages/productsLike.jsx";
+import ProductsLike from "./pages/ProductsLike.jsx";
 import ChangePassword from "./pages/Auth/managerUser/EditPassword.jsx";
 import Layout from "./pages/tintuc/Layout.jsx";
 import NewsCategory from "./pages/tintuc/PageNewsCategory.jsx";
