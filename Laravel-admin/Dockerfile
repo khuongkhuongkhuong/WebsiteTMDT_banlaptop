@@ -21,6 +21,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Phân quyền
 RUN chmod -R 775 storage bootstrap/cache
+RUN mkdir -p public
 
 EXPOSE 8000
 
@@ -28,4 +29,4 @@ EXPOSE 8000
 CMD php artisan key:generate --force && \
     php artisan config:cache && \
     php artisan view:cache && \
-    php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+    php artisan serve --host=0.0.0.0 --port=${PORT:-8000} --no-reload
