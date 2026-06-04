@@ -26,7 +26,6 @@ EXPOSE 8000
 
 # Chạy tất cả lệnh artisan lúc runtime (khi có biến môi trường thật)
 CMD php artisan key:generate --force && \
-    php artisan storage:link && \
     php artisan config:cache && \
     php artisan route:cache && \
     php artisan view:cache && \
