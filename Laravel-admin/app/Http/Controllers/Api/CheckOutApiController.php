@@ -15,11 +15,7 @@ use App\Mail\OrderSuccessMail;
 
 class CheckOutApiController extends Controller
 {
-<<<<<<< HEAD
-  /**
-=======
     /**
->>>>>>> 6045d5a81d3b1d26b10db5a9f363874b34b56c58
      * Display a listing of the resource.
      */
     public function paymethod()
@@ -53,29 +49,6 @@ class CheckOutApiController extends Controller
         ]);
     }
 
-<<<<<<< HEAD
-    //put order 
-    public function order(Request $request)
-    {
-        $validated = $request->validate([
-            'id_payment' => 'required|exists:payments,id',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string|max:255',
-            'note' => 'nullable|string|max:500',
-            'email' => 'nullable|email',
-            'name' => 'nullable|string|max:255',
-            'order_details' => 'required|array|min:1',
-            'order_details.*.id_variant' => 'required|exists:product_variants,id',
-            'order_details.*.quantity' => 'required|integer|min:1',
-        ]);
-
-        try {
-            $order = DB::transaction(function () use ($request) {
-                $totalProductPrice = 0;
-                $orderDetailsData = [];
-
-    foreach ($request->order_details as $detail) {
-=======
 
     //put order 
     public function order(Request $request)
@@ -98,25 +71,17 @@ class CheckOutApiController extends Controller
                 $orderDetailsData = [];
 
                 foreach ($request->order_details as $detail) {
->>>>>>> 6045d5a81d3b1d26b10db5a9f363874b34b56c58
                     $variant = ProductVariant::with('product.activeDiscount')
                         ->lockForUpdate()
                         ->findOrFail($detail['id_variant']);
 
                     if ($variant->stock < $detail['quantity']) {
                         throw new \Exception('Sản phẩm "' . optional($variant->product)->name . '" không đủ tồn kho.');
-<<<<<<< HEAD
-                    }   
-
-     $price = $variant->price;
-     if (
-=======
                     }
 
                     $price = $variant->price;
 
                     if (
->>>>>>> 6045d5a81d3b1d26b10db5a9f363874b34b56c58
                         $variant->product &&
                         $variant->product->activeDiscount
                     ) {
@@ -255,8 +220,6 @@ class CheckOutApiController extends Controller
                 'message' => $e->getMessage()
             ], 400);
         }
-<<<<<<< HEAD
-=======
     }
     public function vnpayReturn(Request $request)
     {
@@ -329,98 +292,8 @@ class CheckOutApiController extends Controller
         $order->thanh_toan = 1;
         $order->save();
         return response()->json(['success' => true, 'data' => $order, 'message' => 'Order not found. Order_id '], 200);
->>>>>>> 6045d5a81d3b1d26b10db5a9f363874b34b56c58
     }
-    public function vnpayReturn(Request $request)
-    {
-        $vnp_HashSecret = env('VNPAY_HASH_SECRET', 'YOUR_SECRET_KEY');
 
-<<<<<<< HEAD
-        $inputData = $request->all();
-
-        if (!isset($inputData['vnp_SecureHash'])) {
-            return redirect(env('FRONTEND_URL') . '/checkout-online?status=error');
-        }
-
-        $vnp_SecureHash = $inputData['vnp_SecureHash'];
-
-        unset($inputData['vnp_SecureHash']);
-        unset($inputData['vnp_SecureHashType']);
-
-        ksort($inputData);
-
-        $hashData = "";
-        $i = 0;
-
-        foreach ($inputData as $key => $value) {
-            if ($i == 1) {
-                $hashData .= '&' . urlencode($key) . "=" . urlencode($value);
-            } else {
-                $hashData .= urlencode($key) . "=" . urlencode($value);
-                $i = 1;
-            }
-        }
-
-        $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
-
-        $orderId = $request->input('vnp_TxnRef');
-
-        if ($secureHash === $vnp_SecureHash && $request->input('vnp_ResponseCode') === '00') {
-            Order::where('id', $orderId)->update([
-                'thanh_toan' => 1
-            ]);
-
-            return redirect(env('FRONTEND_URL') . '/checkout-online?id=' . $orderId . '&status=success');
-        }
-
-        return redirect(env('FRONTEND_URL') . '/checkout-online?id=' . $orderId . '&status=failed');
-    }
-    // 
-    public function webhook(Request $request)
-    {
-
-        if ($request->transferType !== "in") {
-            return response()->json(['success' => false, 'message' => 'not order ']);
-        }
-
-        $transaction_content = $request->input('content');
-        $regex = '/MDH(\d+)/';
-        preg_match($regex, $transaction_content, $matches);
-        $pay_order_id = $matches[1];
-
-
-   if (!is_numeric($pay_order_id)) {
-            return response()->json(['success' => false, 'message' => 'Order not found. Order_id ']);
-        }
-
-        $order = Order::where("id", $pay_order_id)
-            ->where('thanh_toan', 0)
-            ->where('total_price', $request->transferAmount)->first();
-
-
-        if (!$order) {
-            return response()->json(['success' => false, 'message' => 'Order not found. Order_id ' . $pay_order_id]);
-        }
-        $order->thanh_toan = 1;
-        $order->save();
-        return response()->json(['success' => true, 'data' => $order, 'message' => 'Order not found. Order_id '], 200);
-    }
-       // 
-    public function KTThanhToan(Request $request)
-    {
-    // Tìm đơn hàng Điều kiện là id đơn hàng, số tiền, trạng thái đơn hàng phải là 'Unpaid'
-        $order = Order::where("id", $request->id)
-            ->where('thanh_toan', 1)
-            ->first();
-
-    if (!$order) {
-            return response()->json(['success' => false, 'message' => 'Chưa thanh toán'], 201);
-        } else {
-            return response()->json(['success' => true, 'message' => 'thanh toán thành cong'], 200);
-        }
-    }
-  }
-=======
     // 
     public function KTThanhToan(Request $request)
     {
@@ -438,4 +311,3 @@ class CheckOutApiController extends Controller
         }
     }
 }
->>>>>>> 6045d5a81d3b1d26b10db5a9f363874b34b56c58

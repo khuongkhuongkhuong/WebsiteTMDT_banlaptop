@@ -10,8 +10,8 @@
 
 {{-- text edittor --}}
 <main>
-        <form class="page-main" action="{{ route('page.product.store') }}" enctype="multipart/form-data"
-        method="POST" onsubmit="markFormAsSubmitted()">
+        <form class="page-main" action="{{ route('page.product.store') }}" enctype="multipart/form-data" method="POST"
+        onsubmit="markFormAsSubmitted()">
         @csrf
         <div class="text-title">
             <div class="product-btn-row">
@@ -52,8 +52,8 @@
                     <select id="product-category" name="id_category" class="@error('id_category') is-invalid @enderror">
                         <option value="">Chọn danh mục</option>
                         @foreach($categories as $category)
-                        <option value="{{ $category->id }}" {{ old('id_category')==$category->id ? 'selected' : '' }}>{{
-                            $category->name }}</option>
+                        <option value="{{ $category->id }}" {{ old('id_category') == $category->id ? 'selected' : '' }}>{{
+                                $category->name }}</option>
                         @endforeach
                     </select>
                     @error('id_category')
@@ -66,7 +66,8 @@
                     <div style="min-height: 110px">
                         <label class="label-text" for="product-import-date">Ngày nhập</label>
                         <input class="input-text @error('import_date') is-invalid @enderror" type="date"
-                            id="product-import-date" name="import_date" value="{{ old('import_date') }}">
+                        id="product-import-date" name="import_date" value="{{ old('import_date', date('Y-m-d')) }}"
+                        max="{{ date('Y-m-d') }}">
                         @error('import_date')
                         <span class="baoloi" style="font-size: 14px;">{{ $message }}</span>
                         @enderror
@@ -80,8 +81,8 @@
                             class="@error('id_discount') is-invalid @enderror">
                             <option value=""> Không giảm giá</option>
                             @foreach($discounts as $discount)
-                            <option value="{{ $discount->id }}" {{ old('id_discount',$product->id_discount ?? '') ==
-                                $discount->id ? 'selected' : '' }}>
+                            <option value="{{ $discount->id }}" {{ old('id_discount', $product->id_discount ?? '') ==
+                                    $discount->id ? 'selected' : '' }}>
                                 {{ $discount->description }} ({{ $discount->value }}%)
                             </option>
                             @endforeach
@@ -95,30 +96,36 @@
                 {{-- thuộc tính --}}
                 <div>
                     <div class="attribute-row">
-                    <div id="form-add-product">
-                        <div id="attribute-container">
-                            <label class="label-text">Thuộc tính</label>
-                            @foreach (old('attributes.key', ['']) as $index => $oldKey)
-                            <div class="product-input-group">
-                                <div class="attributes-key">
-                                    <input id="attribute-key-{{ $index }}" class="input-text attribute-input @error('attributes[key][]') is-invalid @enderror" type="text" name="attributes[key][]" placeholder="Tên thuộc tính" value="{{ $oldKey }}">
-                                    @error('attributes.key.' . $index)
-                                    <div class="baoloi" style="font-size: 13px;">{{ $message }}</div>
-                                    @enderror
+                        <div id="form-add-product">
+                            <div id="attribute-container">
+                                <label class="label-text">Thuộc tính</label>
+                                @foreach (old('attributes.key', ['']) as $index => $oldKey)
+                                <div class="product-input-group">
+                                    <div class="attributes-key">
+                                        <input id="attribute-key-{{ $index }}"
+                                            class="input-text attribute-input @error('attributes[key][]') is-invalid @enderror"
+                                            type="text" name="attributes[key][]" placeholder="Tên thuộc tính"
+                                            value="{{ $oldKey }}">
+                                        @error('attributes.key.' . $index)
+                                        <div class="baoloi" style="font-size: 13px;">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="attributes-value">
+                                        <input id="attribute-value-{{ $index }}"
+                                            class="input-text value-input @error('attributes[value][]') is-invalid @enderror"
+                                            type="text" name="attributes[value][]" placeholder="Giá trị thuộc tính"
+                                            value="{{ old('attributes.value.' . $index) }}">
+                                        @error('attributes.value.' . $index)
+                                        <div class="baoloi" style="font-size: 13px;">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="delete-container">
+                                        <a href="" type="button" class="delete-attribute">Xóa</a>
+                                    </div>
                                 </div>
-                                <div class="attributes-value">
-                                    <input id="attribute-value-{{ $index }}" class="input-text value-input @error('attributes[value][]') is-invalid @enderror" type="text" name="attributes[value][]" placeholder="Giá trị thuộc tính" value="{{ old('attributes.value.' . $index) }}">
-                                    @error('attributes.value.' . $index)
-                                    <div class="baoloi" style="font-size: 13px;">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="delete-container">
-                                    <a href="" type="button" class="delete-attribute">Xóa</a>
-                                </div>
+                                @endforeach
                             </div>
-                            @endforeach
                         </div>
-                    </div>
                         {{-- hết input thuôc tính --}}
                     </div>
                     {{-- nút thêm --}}
@@ -137,7 +144,7 @@
                             <input type="hidden" name="hot_product" value="0">
 
                             <input type="checkbox" id="product-hot" name="hot_product" value="1" {{ old('hot_product')
-                                ? 'checked' : '' }}>
+                                 ? 'checked' : '' }}>
 
                             <label for="product-hot" class="toggle-btn">🔥 HOT 🔥</label>
                         </div>
@@ -147,8 +154,10 @@
                             <label class="label-text" for="status">Trạng thái</label>
                             <input type="hidden" name="status" value="0">
                             <label class="switch">
-                                <input type="checkbox" id="statuss" name="status" value="1" {{ old('status',
-                                    $product->status ?? 1) == '1' ? 'checked' : '' }}>
+                                <input type="checkbox" id="statuss" name="status" value="1" {{ old(
+        'status',
+        $product->status ?? 1
+    ) == '1' ? 'checked' : '' }}>
                                 <span class="slider"></span>
                             </label>
                         </div>
@@ -163,10 +172,13 @@
                             @foreach ($customersegments as $segment)
                             <div class="customer-checkbox">
                                 <input type="checkbox" id="customer-segment-{{ $segment->id }}"
-                                    name="customer_segments[]" value="{{ $segment->id }}" {{ in_array($segment->id,
-                                old('customer_segments', [])) ? 'checked' : '' }}>
-                                <label class="label-text" for="customer-segment-{{ $segment->id }}">{{ $segment->name
-                                    }}</label>
+                                    name="customer_segments[]" value="{{ $segment->id }}" {{ in_array(
+                                        $segment->id,
+                                        old('customer_segments', [])
+                                    ) ? 'checked' : '' }}>
+                                <label class="label-text"
+                                    for="customer-segment-{{ $segment->id }}">{{ $segment->name
+                                                                                                                                                                    }}</label>
 
                             </div>
                             @endforeach
@@ -188,8 +200,9 @@
                     <label class="label-text">Ảnh sản phẩm</label>
                     <div id="image-upload-container">
                         <div class="product-upload-img" data-index="0">
-                            <div class="box-img-upload" >
-                                <img class="preview-image" id="preview-image-0" alt="Xem trước ảnh" style="display: none; width: 100%; height: auto;">
+                            <div class="box-img-upload">
+                                <img class="preview-image" id="preview-image-0" alt="Xem trước ảnh"
+                                    style="display: none; width: 100%; height: auto;">
                                 <i id="preview-icon-0" class="fa-solid fa-image"
                                     style="font-size: 48px; color: #aaa;"></i>
                                 <label style="position: absolute; inset: 0; cursor: pointer;">
@@ -198,8 +211,8 @@
                                         style="opacity: 0; width: 100%; height: 100%; cursor: pointer;">
                                 </label>
                                  <!-- Dấu X để xóa hình ảnh, chỉ hiển thị khi đã có ảnh -->
-                                 <button type="button" class="remove-image" id="remove-image-0" onclick="removeImage(0)"
-                                >❌</button>
+                                <button type="button" class="remove-image" id="remove-image-0"
+                                    onclick="removeImage(0)">❌</button>
                      
                             </div>
                         </div>
@@ -220,8 +233,8 @@
                         <select id="product-brand" name="id_brand" class="@error('id_brand') is-invalid @enderror">
                             <option value="">Chọn thương hiệu</option>
                             @foreach($brands as $brand)
-                            <option value="{{ $brand->id }}" {{ old('id_brand')==$brand->id ? 'selected' : '' }}>{{
-                                $brand->name }}</option>
+                            <option value="{{ $brand->id }}" {{ old('id_brand') == $brand->id ? 'selected' : '' }}>{{
+                                    $brand->name }}</option>
                             @endforeach
                         </select>
                         @error('id_brand')
@@ -252,7 +265,8 @@
                                     <div class="box-img-uploadd">
                                         <img class="preview-image" id="preview-image-variant-0"
                                             style="display: none; width: 100%; height: auto;" alt="Xem trước ảnh">
-                                        <i class="fa-solid fa-image preview-icon" style="font-size: 48px; color: #aaa;"></i>
+                                        <i class="fa-solid fa-image preview-icon"
+                                            style="font-size: 48px; color: #aaa;"></i>
                                         <label style="position: absolute; inset: 0; cursor: pointer;">
                                             <input class="input-text custom__input-file" type="file"
                                                 name="variants[image][]" onchange="previewImage(this, 0)"
@@ -300,12 +314,39 @@
 
 <script src="{{ asset('/js/QuillEditText.js') }}" defer></script>
 <script>
-    document.querySelector(".delete-link").addEventListener("click", function (event) {
-  event.preventDefault(); // Ngăn chặn load lại trang
-  // Thực hiện hành động xóa ở đây
-  console.log("Đã click vào nút xóa!");
+    document.querySelector(".delete-link").addEventListener("click", function(event) {
+    event.preventDefault(); // Ngăn chặn load lại trang
+    // Thực hiện hành động xóa ở đây
+    console.log("Đã click vào nút xóa!");
 });
 
 </script>
 <script src="{{ asset('/js/Alerts.js') }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const importDateInput = document.getElementById("product-import-date");
+
+    if (importDateInput) {
+        const today = new Date().toISOString().split("T")[0];
+
+        importDateInput.setAttribute("max", today);
+
+        if (!importDateInput.value) {
+            importDateInput.value = today;
+        }
+
+        importDateInput.addEventListener("change", function() {
+            if (this.value > today) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Ngày nhập không hợp lệ",
+                    text: "Ngày nhập không được lớn hơn ngày hiện tại.",
+                });
+
+                this.value = today;
+            }
+        });
+    }
+});
+</script>
 @endsection

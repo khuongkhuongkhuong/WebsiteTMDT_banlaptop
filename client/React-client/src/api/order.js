@@ -32,9 +32,12 @@ export async function fetchPayment() {
 
   try {
     const response = await axios.request(config);
+
+    console.log("PAYMENT API:", response.data);
+
     return response.data.payments || [];
   } catch (error) {
-    console.error("❌❌❌ Error fetching payment:", error);
+    console.error("❌ Error fetching payment:", error);
     return [];
   }
 }

@@ -37,6 +37,7 @@ export default function CheckOut() {
   const [loading, setLoading] = useState(false);
   const cartIds = useMemo(() => isCart.map((item) => item.id), [isCart]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState("");
   const getaddress = userGet?.address?.split(",") || [];
   const [addrDetail, wardGet, districtGet, provinceGet] = getaddress?.map((a) =>
     a.trim(),
@@ -143,7 +144,7 @@ export default function CheckOut() {
     }
     const { valid } = await checkToken();
     if (
-      e.target.methor.value == "" ||
+      selectedPayment == "" ||
       phoneState == "" ||
       addressDetail == "" ||
       wardValue == "" ||
@@ -174,7 +175,7 @@ export default function CheckOut() {
         id_user: userGet.id,
         email: userGet.email,
         name: userGet.last_name + " " + userGet.first_name,
-        id_payment: e.target.methor.value,
+        id_payment: selectedPayment,
         phone: phoneState.trim(),
         note: e.target.note.value.trim(),
         address: `${addressDetail}, ${wardValue}, ${selectedDistrict}, ${selectedProvince}`,
@@ -213,7 +214,7 @@ export default function CheckOut() {
             draggable: true,
             color: "#0a402b",
           }).then(() => {
-            if (e.target.methor.value != 1) {
+            if (selectedPayment != 1) {
               navigate(`/check-out/${result.data.order}`);
             } else {
               navigate(`/`);
@@ -414,25 +415,32 @@ export default function CheckOut() {
                         Phương thức thanh toán
                       </label>
 
-                      {!isFetching &&
-                        fetchedData?.length > 0 &&
+                      {!isFetching && fetchedData?.length > 0 ? (
                         fetchedData.map((item) => (
                           <p key={item.id} className="flex items-center p-1">
                             <input
                               type="radio"
-                              id={item.id}
+                              id={`payment-${item.id}`}
                               name="methor"
                               value={item.id}
                               className="mr-5 cursor-pointer"
+                              onChange={(e) =>
+                                setSelectedPayment(e.target.value)
+                              }
                             />
                             <label
-                              htmlFor={item.id}
+                              htmlFor={`payment-${item.id}`}
                               className="cursor-pointer text-sm"
                             >
                               {item.payment_method}
                             </label>
                           </p>
-                        ))}
+                        ))
+                      ) : (
+                        <p className="text-sm text-gray-500">
+                          Chưa có phương thức thanh toán
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
