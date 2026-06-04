@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   // base: "./",
   build: {
-    outDir: "public/build", // xuất ra trong thư mục public
+    outDir: "dist", // xuất ra trong thư mục public
     emptyOutDir: true, // xóa thư mục trước khi build
   },
 });
